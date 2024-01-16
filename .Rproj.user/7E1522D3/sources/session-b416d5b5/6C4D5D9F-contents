@@ -1,0 +1,269 @@
+# MetaCells R wrapper
+
+# it defines a virtual environment via reticulate
+# and installs metacells in it by default.
+# the environment can be easily removed!
+
+
+
+package_warning <- function(package_x){
+  ### Description ###
+  # Prints a warning message to install a package
+
+  # example usage
+  # package_warning('ruler')
+
+
+
+  message('Please install ',
+          package_x,
+          ' to your home directory using install.packes(\'',
+          package_x,
+          '\', lib = \'</home/user.name/R>\')')
+}
+
+
+
+is_package_installed <- function(package_x, lib.loc=NULL){
+  ### Description ###
+  # Checks if a package is installed or not in your general .R folder
+
+  # example usage
+  # is_package_installed('ACTIONet') -> TRUE
+  # is_package_installed('ruler') -> …
+  # Please install ruler to your home directory
+  # using install.packes('ruler', lib = '</home/user.name/R>')
+  # Error in is.package_x.install("ruler")
+
+
+
+  if(!requireNamespace(package_x, quietly = TRUE, lib.loc=NULL)){
+    stop(package_warning(package_x))
+  }
+  return(TRUE)
+}
+
+
+
+is_python_package_installed <- function(packages.vec,
+                                        envname='r-reticulate'){
+
+  ### Description ###
+  # Checks if you have installed a python package in a given virtual env
+  # by default it checks for r-reticulate since it is suite for a SLURM HPC
+  # If the package is not present, it directly tries to install it…
+
+  # example usage
+  # is_python_package_installed(c('numpy', 'pandas'))
+
+
+
+  is_package_installed('reticulate')
+
+  msg.chr <- 'Installing in r-reticulate virtual environment packages : \n'
+  # retrieving the specific of the virtual|conda environment
+
+  if(!(envname %in% reticulate::virtualenv_list())){
+    message('Defining a new virtual environment called : ', envname)
+    reticulate::virtualenv_create(envname = envname)
+  }
+
+  env_packages.table <- reticulate::py_list_packages(envname = envname)
+  env_packages.vec <- env_packages.table[, 'package']
+
+  installed.boolvec <- packages.vec %in% env_packages.vec
+  if(any(!installed.boolvec)){
+    packages2install.vec <-  packages.vec[!installed.boolvec]
+    message(paste0(msg.chr, packages2install.vec))
+    reticulate::virtualenv_install(envname = envname,
+                                   packages = packages2install.vec)
+  }
+  else(message('All python packages are installed'))
+}
+
+
+
+check_dir <- function(directory2check.dir){
+  ### Description ####
+  # Checks if the directory exists;
+  # if not, it creates the directory
+
+  # example usage
+  # check_dir('~/Documents/PhD')
+
+
+
+  if(!dir.exists(directory2check.dir)){
+    message(paste0('--- new directory defined at : ',
+                   directory2check.dir , '---\n'))
+    dir.create(directory2check.dir)
+  }
+}
+
+
+
+partition_metacell <- function(matrix,
+                               target_metacell_size=100,
+                               envname='r-metacells',
+                               assay_name='full_run',
+                               quality_filters=TRUE,
+                               min_umi=800,
+                               max_umi=20000,
+                               excluded_gene_names=c('XIST, MALAT1'),
+                               excluded_gene_patterns=c('MT-.*'),
+                               max_excluded_gene_fraction=0.25,
+                               lateral_gene_name=c(# Cell-cycle
+                                                   "AURKA", "MCM3", "MCM4",
+                                                   "MCM7", "MKI67", "PCNA",
+                                                   "RRM2", "SMC4", "TPX2",
+                                                   # Stress
+                                                   "FOS", "HSP90AB1", "TXN"),
+                               lateral_gene_patterns=c("RP[LS].*"), # Ribosomal
+                               noisy_gene_names=c(),
+                               noisy_gene_patterns=c(),
+                               num_parallel_piles=NULL,
+                               return_model=FALSE,
+                               seed=42,
+                               ...){
+    ### Description ###
+    # Computes Metacells from a dense or dgCMatrix! (NOT from dgTMatrix)
+    # Many of the parameters are task-specific and the results of the method
+    # should be evaluated carefully!
+    # In case, ask Carlo
+
+    # To do : remove loggings for all the functions
+
+
+
+
+    message('--- Checking packages ---')
+    is_python_package_installed(packages.vec = 'metacells', envname = envname)
+    #.rs.restartR() in case there are problems with the loading metacells
+    # enforcing the use of the correct environment
+    reticulate::use_virtualenv(envname)
+
+    mc <- reticulate::import('metacells')
+    ad <- reticulate::import('anndata')
+    np <- reticulate::import('numpy')
+
+    # enforcing the variables type to avoid crashes in python
+    if(!is.null(min_umi)) min_umi <- as.integer(min_umi)
+    if(!is.null(max_umi)) max_umi <- as.integer(max_umi)
+    if(!is.null(max_excluded_gene_fraction)){
+        max_excluded_gene_fraction <- as.double(max_excluded_gene_fraction)}
+    target_metacell_size <- as.integer(target_metacell_size)
+    seed <-  as.integer(seed)
+
+    ## IMPORTANT
+    # float32 type required by metacells will be deprecated in late 2024
+    data.h5ad <- ad$AnnData(t(matrix), dtype = 'float32')
+    data.h5ad$obs_names <- colnames(matrix)
+    data.h5ad$var_names <- rownames(matrix)
+    # enforcing unique feature names
+    data.h5ad$var_names_make_unique()
+
+    mc$ut$top_level(data.h5ad)
+    mc$ut$set_name(data.h5ad, name = assay_name)
+
+
+
+    if(quality_filters) message('--- Quality Filtering Steps ---')
+
+    if(!quality_filters){
+      min_umi <- NULL
+      max_umi <- NULL
+      excluded_gene_names <- NULL
+      excluded_gene_patterns <- NULL
+      lateral_gene_name <- NULL
+      lateral_gene_patterns <- NULL
+      noisy_gene_names <- NULL
+      noisy_gene_patterns <- NULL
+      max_excluded_gene_fraction <- NULL
+    }
+
+    if(is.null(min_umi) & is.null(max_umi)){
+      message('note : Avoiding filtering cells by total UMI counts')
+    }
+
+    if(is.null(excluded_gene_names) & is.null(excluded_gene_patterns)){
+      message('note : Considering all gene names and patterns')
+    }
+
+    # it also excludes highly variant genes which are also uncorrelated
+    # with any other gene
+    if(quality_filters) message('--- 1. excluding genes ---')
+    mc$pl$exclude_genes(data.h5ad,
+                        excluded_gene_names = excluded_gene_names,
+                        excluded_gene_patterns = excluded_gene_patterns,
+                        random_seed = seed);
+
+    if(quality_filters) message('--- 2. excluding cells ----')
+    mc$tl$compute_excluded_gene_umis(data.h5ad) # for each cell
+    mc$pl$exclude_cells(data.h5ad,
+                        properly_sampled_min_cell_total = min_umi,
+                        properly_sampled_max_cell_total = max_umi,
+                        properly_sampled_max_excluded_genes_fraction = max_excluded_gene_fraction)
+
+    if(quality_filters) message('--- 3. cleaning the data ---')
+    data.h5ad <- mc$pl$extract_clean_data(data.h5ad, name = paste0(assay_name, '_clean'))
+
+
+    if(quality_filters) message('--- 4. marking lateral genes ---')
+    mc$pl$mark_lateral_genes(data.h5ad,
+                             lateral_gene_names = lateral_gene_name,
+                             lateral_gene_patterns = lateral_gene_patterns,
+                             op = 'set') # op = 'add' adds gene names
+
+    if(quality_filters) message('--- 5. marking noisy genes ---')
+    mc$pl$mark_noisy_genes(data.h5ad,
+                           noisy_gene_names = noisy_gene_names,
+                           noisy_gene_patterns = noisy_gene_patterns,
+                           op = 'set')
+
+    if(is.null(num_parallel_piles)){
+        max_parallel_piles <- mc$pl$guess_max_parallel_piles(data.h5ad)
+        mc$pl$set_max_parallel_piles(max_parallel_piles)
+    }else{mc$pl$set_max_parallel_piles(num_parallel_piles)
+
+    }
+
+
+
+    message('--- Computing MetaCells ---')
+    mc$pl$divide_and_conquer_pipeline(data.h5ad,
+                                      target_metacell_size = target_metacell_size,
+                                      random_seed = seed,
+                                      ...)
+
+    metacells.h5ad <- mc$pl$collect_metacells(data.h5ad, random_seed = seed)
+
+    metacells.matrix <- t(metacells.h5ad$X)
+    rownames(metacells.matrix) <- np$array(data.h5ad$var_names)
+    colnames(metacells.matrix) <- paste0(rep('MetaCell_'),
+                                         seq(1, ncol(metacells.matrix)))
+
+
+    if(return_model){
+        return(list(model = metacells.h5ad), metacells =  metacells.matrix)
+    }else{return(metacells.matrix)}
+}
+
+
+
+
+
+
+
+# example use case
+# mouse <- readRDS('group/davila/DB/MOUSE/Hou2023_WT.ace.out.rds')
+# matrix <- counts(mouse)
+# matrix = counts(matrix)
+# metacell.matrix <- partition_metacell(matrix)
+
+
+
+
+
+
+
+

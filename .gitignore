@@ -1,0 +1,16 @@
+# files that I do not want in the repository! 
+
+# Directories
+
+# Files
+# R files 
+*.rda
+*.rds
+# Python files 
+*.h5ad
+
+
+# For the HPC (SLURM)
+*.err
+*.out
+*.Rout 
