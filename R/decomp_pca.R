@@ -5,7 +5,7 @@ decomp_pca <- function(sce,
                        center=TRUE,
                        scale=FALSE,
                        seed=42,
-                       envname='r-reticulate',
+                       envname='r-decomp',
                        result_name='pca',
                        return_model=FALSE){
     ### Description ###
@@ -24,10 +24,10 @@ decomp_pca <- function(sce,
     message('--- Checking packages ---')
     is_package_installed('reticulate')
 
-    reticulate::use_virtualenv(virtualenv = envname)
-
     is_python_package_installed(packages.vec = 'scikit-learn',
                                 envname = envname)
+
+    reticulate::use_virtualenv(envname)
 
     # importing 'only' the decomposition approaches of sklrn
     sklr.decomposition <- reticulate::import('sklearn.decomposition')

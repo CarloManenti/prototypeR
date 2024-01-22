@@ -14,3 +14,4 @@
 *.err
 *.out
 *.Rout 
+.Rproj.user

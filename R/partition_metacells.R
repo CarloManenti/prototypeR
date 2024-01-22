@@ -30,7 +30,6 @@ partition_metacell <- function(sce,
     # In case, ask Carlo
 
     # To do : • remove loggings for all the functions
-    #         • flag to keep all the genes after the definition of metacells
 
     # example usage
     #load('data/sce.rda')

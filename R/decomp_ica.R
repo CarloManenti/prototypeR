@@ -46,7 +46,7 @@ decomp_ica <- function(sce,
 
 
 
-    message(paste0('--- Storing results ---'))
+    message('--- Storing results ---')
 
     # cell view
     ica_h.matrix <- ica.model$S

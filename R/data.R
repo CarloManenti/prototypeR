@@ -2,8 +2,9 @@
 #'
 #' A subset of data from https://github.com/dylkot/cNMF
 #' They present 13 different Identity communities and 1 shared state phenotype.
+#' note: the gene names where picked at random from another data set
 #'
-#' @format ## `simulated_data.sce`
+#' @format ## `sce`
 #' A data frame with 500 rows -genes;features-
 #' and 1000 columns -cells; observations-:
 #' \describe{
@@ -13,4 +14,4 @@
 #'   ...
 #' }
 #' @source <https://codeocean.com/capsule/6314882/tree/v1>
-"simulated_data.sce"
+"sce"
