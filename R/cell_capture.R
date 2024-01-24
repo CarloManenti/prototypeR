@@ -16,7 +16,11 @@ cell_capture <- function(ace,
   # and comparing one prototype / partition
   # to all the others.
 
-  # in case anything brake… Ask Carlo Manenti!
+  # in case anything brakes… Ask Carlo Manenti!
+
+  ## check for normality of the data!
+
+
 
   sorted_annotation <- sort(unique(annotations))
 

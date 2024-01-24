@@ -84,4 +84,22 @@ is_python_package_installed <- function(packages.vec, envname='r-reticulate'){
   else(message('All python packages are installed'))
 }
 
+
+package_warning <- function(package_x){
+  ### Description ###
+  # Prints a warning message to install a package
+
+  # example usage
+  # package_warning('ruler')
+
+
+
+  message('Please install ',
+          package_x,
+          ' to your home directory using install.packes(\'',
+          package_x,
+          '\', lib = \'</home/user.name/R>\')')
+}
+
+
 load('data/sce.rda')
