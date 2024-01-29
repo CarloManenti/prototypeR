@@ -274,7 +274,7 @@ decomp_kaa <- function(sce,
     membership.vec <- membership.matrix[, 1]
     # removing SEACell-
     membership.vec <- as.integer(gsub(".*-","", membership.vec))
-    # assinging cell names to the membership vector
+    # assigning cell names to the membership vector
     names(membership.vec) <- rownames(membership.matrix)
 
     colData(sce)[[result_name]] <- membership.vec
