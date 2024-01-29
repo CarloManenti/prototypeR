@@ -16,7 +16,7 @@ decomp_nmf <- function(sce,
 
 
 
-    message('--- Checking packages ---')
+    message('--- Checking Packages ---')
     is_package_installed('reticulate')
     is_python_package_installed(envname = envname, packages.vec = c('nimfa'))
     reticulate::use_virtualenv(envname)
@@ -64,12 +64,12 @@ decomp_nmf <- function(sce,
 
     message('--- Storing Results ---')
     patterns_names <- paste0(rep('NNF_', n_components), seq_len(n_components))
+    result_name <- change_default_name(result_name, reducedDimNames(sce))
 
     # Cell view
     nmf_h.dgCmatrix <- as(nmf.model$basis(), 'sparseMatrix')
     colnames(nmf_h.dgCmatrix) <- patterns_names
     rownames(nmf_h.dgCmatrix) <- colnames(sce)
-    result_name <- change_default_name(result_name, reducedDimNames(sce))
     reducedDims(sce)[[result_name]] <- nmf_h.dgCmatrix
 
     # Gene view
