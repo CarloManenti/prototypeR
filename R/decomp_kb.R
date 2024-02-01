@@ -7,9 +7,9 @@ decomp_kb <- function(sce,
                       # to an integer per cell type
                       lam=0.10, # trust in the prior (the higher, the higher the trust in it!)
                       use_highly_variable=TRUE,
-                      n_markers = 50,
-                      num_epochs = 1000,
-                      min_gs_num = 3,
+                      n_markers=50,
+                      num_epochs=1000,
+                      min_gs_num=3,
                       use_cell_types=TRUE,
                       use_weights=TRUE, # edge weights are estimated based on graph
                       # structure and used throughout training
