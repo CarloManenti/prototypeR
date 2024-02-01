@@ -1,6 +1,6 @@
 decomp_va <- function(sce,
                       n_components,
-                      envname='r-decomp',
+                      max_epochs=400,
                       n_highly_variable_genes=5000, # nHVGs
                       layer='counts',
                       categorical_covariate_keys = c(), # to account for possible categorical batches
@@ -8,7 +8,7 @@ decomp_va <- function(sce,
                       target_sum=1e4, # for normalizing (could be the meadian of the dataset or else)
                       accelerator='cpu', # use GPU for TRAINING (must be installed and avaliable!)
                       seed=42,
-                      max_epochs=400,
+                      envname='r-decomp',
                       result_name='va',
                       return_model=FALSE,
                       ...){
@@ -119,5 +119,6 @@ decomp_va <- function(sce,
     if(!return_model) return(sce)
     return(list(obj = sce, model = model))
 }
+
 
 

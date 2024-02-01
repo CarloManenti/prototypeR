@@ -13,7 +13,7 @@ is_python_package_installed <- function(packages.vec,
 
     is_package_installed('reticulate')
 
-    msg.chr <- 'Installing in r-reticulate virtual environment packages : \n'
+    msg.chr <- paste0('Installing in ',envname , ' virtual environment packages : \n')
     # retrieving the specific of the virtual|conda environment
 
     if(!(envname %in% reticulate::virtualenv_list())){

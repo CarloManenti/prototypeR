@@ -1,6 +1,6 @@
-partition_metacell <- function(sce,
+partition_metacells <- function(sce,
                                target_number_of_metacells=100,
-                               envname='r-metacells',
+                               envname='r-decomp',
                                assay_name='full_run',
                                quality_filters=TRUE,
                                min_umi=800,
@@ -33,10 +33,11 @@ partition_metacell <- function(sce,
 
     # example usage
     #load('data/sce.rda')
-    # partition_metacell(sce)
+    # partition_metacells(sce)
 
 
     message('--- Checking packages ---')
+    is_package_installed('retiuclate')
     is_python_package_installed(packages.vec = 'metacells', envname = envname)
     #.rs.restartR() in case there are problems with the loading metacells
     # enforcing the use of the correct environment

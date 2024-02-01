@@ -49,7 +49,8 @@ check_dir <- function(directory2check.dir){
   }
 }
 
-is_python_package_installed <- function(packages.vec, envname='r-reticulate'){
+is_python_package_installed <- function(packages.vec,
+                                        envname='r-reticulate'){
 
   ### Description ###
   # Checks if you have installed a python package in a given virtual env
@@ -63,7 +64,7 @@ is_python_package_installed <- function(packages.vec, envname='r-reticulate'){
 
   is_package_installed('reticulate')
 
-  msg.chr <- 'Installing in r-reticulate virtual environment packages : \n'
+  msg.chr <- paste0('Installing in ',envname , ' virtual environment packages : \n')
   # retrieving the specific of the virtual|conda environment
 
   if(!(envname %in% reticulate::virtualenv_list())){
@@ -85,6 +86,7 @@ is_python_package_installed <- function(packages.vec, envname='r-reticulate'){
 }
 
 
+
 package_warning <- function(package_x){
   ### Description ###
   # Prints a warning message to install a package
@@ -99,6 +101,66 @@ package_warning <- function(package_x){
           ' to your home directory using install.packes(\'',
           package_x,
           '\', lib = \'</home/user.name/R>\')')
+}
+
+
+
+sce2adata_sparse <- function(sce,
+                             envname = 'r-metacell',
+                             main_layer = 'counts',
+                             ...){
+
+  ### Description ###
+  # Converts a sce into an anndata, taking care also of the
+  # coversion of the CSC to CSR sparse matrix.
+
+  # example usage
+  # sce2adata_sparse(sce)
+
+  is_package_installed('sceasy')
+  is_package_installed('reticulate')
+  is_python_package_installed(envname = envname, packages.vec = c('scipy'))
+  reticulate::use_virtualenv(envname)
+  scipy <- reticulate::import('scipy')
+
+  # the matrix will be already transposed! cells x features
+  adata <- sceasy::convertFormat(sce,
+                                 from = "sce",
+                                 to = "anndata",
+                                 main_layer = main_layer,
+                                 drop_single_values = FALSE,
+                                 ...)
+
+  # Converting a CSC sparse matrix to CSR sparse matrix
+  # to run fuster the model
+  if(scipy$sparse$csc$isspmatrix_csc(adata$X)){
+    adata$X <- scipy$sparse$csr_matrix(adata$X)
+  }
+
+  return(adata)
+}
+
+
+
+center_and_scale <- function(matrix.dgCMatrix, center=FALSE, scale=FALSE){
+  ### Description ###
+  # Centers and scales features-wise (row-wise) a sparse matrix.
+  # In case both center and scales are false, it returns the original matrix
+
+  # example usage
+  # center_and_scale(counts(sce), center = T, scale = T)
+
+  if(any(center, scale)){
+    # to compute feature wise centering | scaling
+    # we need to transpose the matrix
+    matrix.dense <- t(base::scale(t(matrix.dgCMatrix),
+                                  center = center,
+                                  scale = scale))
+    matrix.dgCMatrix <- as(matrix.dense, 'sparseMatrix')
+    # it might make no sense to have it sparse, since is filled with non 0s
+    # but the type is consistent
+  }
+  return(matrix.dgCMatrix)
 }
 
 

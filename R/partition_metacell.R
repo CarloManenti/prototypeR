@@ -5,24 +5,20 @@
 # the environment can be easily removed!
 
 
-
-package_warning <- function(package_x){
+change_default_name <- function(result_name, name_list){
   ### Description ###
-  # Prints a warning message to install a package
+  # Changes the result_name to avoid overriding data
 
   # example usage
-  # package_warning('ruler')
+  # change_default_name('my_method', reduceDimNames(sce))
 
-
-
-  message('Please install ',
-          package_x,
-          ' to your home directory using install.packes(\'',
-          package_x,
-          '\', lib = \'</home/user.name/R>\')')
+  if(result_name %in% name_list){
+    # setting the name of the matrix if you have multiple default names
+    method_n <- sum(grepl(result_name, name_list))
+    result_name <- paste0(result_name, method_n)
+  }
+  return(result_name)
 }
-
-
 
 is_package_installed <- function(package_x, lib.loc=NULL){
   ### Description ###
@@ -43,46 +39,6 @@ is_package_installed <- function(package_x, lib.loc=NULL){
   return(TRUE)
 }
 
-
-
-is_python_package_installed <- function(packages.vec,
-                                        envname='r-reticulate'){
-
-  ### Description ###
-  # Checks if you have installed a python package in a given virtual env
-  # by default it checks for r-reticulate since it is suite for a SLURM HPC
-  # If the package is not present, it directly tries to install it…
-
-  # example usage
-  # is_python_package_installed(c('numpy', 'pandas'))
-
-
-
-  is_package_installed('reticulate')
-
-  msg.chr <- 'Installing in r-reticulate virtual environment packages : \n'
-  # retrieving the specific of the virtual|conda environment
-
-  if(!(envname %in% reticulate::virtualenv_list())){
-    message('Defining a new virtual environment called : ', envname)
-    reticulate::virtualenv_create(envname = envname)
-  }
-
-  env_packages.table <- reticulate::py_list_packages(envname = envname)
-  env_packages.vec <- env_packages.table[, 'package']
-
-  installed.boolvec <- packages.vec %in% env_packages.vec
-  if(any(!installed.boolvec)){
-    packages2install.vec <-  packages.vec[!installed.boolvec]
-    message(paste0(msg.chr, packages2install.vec))
-    reticulate::virtualenv_install(envname = envname,
-                                   packages = packages2install.vec)
-  }
-  else(message('All python packages are installed'))
-}
-
-
-
 check_dir <- function(directory2check.dir){
   ### Description ####
   # Checks if the directory exists;
@@ -100,6 +56,58 @@ check_dir <- function(directory2check.dir){
   }
 }
 
+is_python_package_installed <- function(packages.vec, envname='r-reticulate'){
+
+  ### Description ###
+  # Checks if you have installed a python package in a given virtual env
+  # by default it checks for r-reticulate since it is suite for a SLURM HPC
+  # If the package is not present, it directly tries to install it…
+
+  # example usage
+  # is_python_package_installed(c('numpy', 'pandas'))
+
+
+
+  is_package_installed('reticulate')
+
+  msg.chr <- paste0('Installing in',envname ,' virtual environment packages : \n')
+  # retrieving the specific of the virtual|conda environment
+
+  if(!(envname %in% reticulate::virtualenv_list())){
+    message('Defining a new virtual environment called : ', envname)
+    reticulate::virtualenv_create(envname = envname, python = '3.11')
+  }
+
+  env_packages.table <- reticulate::py_list_packages(envname = envname)
+  env_packages.vec <- env_packages.table[, 'package']
+
+  installed.boolvec <- packages.vec %in% env_packages.vec
+  if(any(!installed.boolvec)){
+    packages2install.vec <-  packages.vec[!installed.boolvec]
+    message(paste0(msg.chr, packages2install.vec))
+    reticulate::virtualenv_install(envname = envname,
+                                   packages = packages2install.vec)
+  }
+  else(message('All python packages are installed'))
+}
+
+
+package_warning <- function(package_x){
+  ### Description ###
+  # Prints a warning message to install a package
+
+  # example usage
+  # package_warning('ruler')
+
+
+
+  message('Please install ',
+          package_x,
+          ' to your home directory using install.packes(\'',
+          package_x,
+          '\', lib = \'</home/user.name/R>\')')
+}
+
 
 
 partition_metacell <- function(matrix,
@@ -112,7 +120,7 @@ partition_metacell <- function(matrix,
                                excluded_gene_names=c('XIST, MALAT1'),
                                excluded_gene_patterns=c('MT-.*'),
                                max_excluded_gene_fraction=0.25,
-                               lateral_gene_name=c(# Cell-cycle
+                               lateral_gene_names=c(# Cell-cycle
                                                    "AURKA", "MCM3", "MCM4",
                                                    "MCM7", "MKI67", "PCNA",
                                                    "RRM2", "SMC4", "TPX2",
@@ -137,14 +145,24 @@ partition_metacell <- function(matrix,
 
 
     message('--- Checking packages ---')
-    is_python_package_installed(packages.vec = 'metacells', envname = envname)
+    is_package_installed('reticulate')
+
+    packages.vec = c('metacells',
+                     'numpy',
+                     'anndata',
+                     'pandas',
+                     'scanpy',
+                     'scipy')
+
+    is_python_package_installed(packages.vec = packages.vec, envname = envname)
     #.rs.restartR() in case there are problems with the loading metacells
     # enforcing the use of the correct environment
     reticulate::use_virtualenv(envname)
 
-    mc <- reticulate::import('metacells')
-    ad <- reticulate::import('anndata')
-    np <- reticulate::import('numpy')
+    mc    <- reticulate::import('metacells')
+    ad    <- reticulate::import('anndata')
+    np    <- reticulate::import('numpy')
+    scipy <- reticulate::import('scipy')
 
     # enforcing the variables type to avoid crashes in python
     if(!is.null(min_umi)) min_umi <- as.integer(min_umi)
@@ -156,9 +174,17 @@ partition_metacell <- function(matrix,
 
     ## IMPORTANT
     # float32 type required by metacells will be deprecated in late 2024
+
+    # Conversion form CSC to CSR keeping it sparse!
+    if(scipy$sparse$csc$isspmatrix_csc(matrix)){
+      matrix <- scipy$sparse$csr_matrix(matrix)
+    }
+
     data.h5ad <- ad$AnnData(t(matrix), dtype = 'float32')
-    data.h5ad$obs_names <- colnames(matrix)
-    data.h5ad$var_names <- rownames(matrix)
+    if(!is.null(colnames(matrix))){
+        data.h5ad$obs_names <- colnames(matrix)}
+    if(!is.null(rownames(matrix))){
+        data.h5ad$var_names <- rownames(matrix)}
     # enforcing unique feature names
     data.h5ad$var_names_make_unique()
 
@@ -210,7 +236,7 @@ partition_metacell <- function(matrix,
 
     if(quality_filters) message('--- 4. marking lateral genes ---')
     mc$pl$mark_lateral_genes(data.h5ad,
-                             lateral_gene_names = lateral_gene_name,
+                             lateral_gene_names = lateral_gene_names,
                              lateral_gene_patterns = lateral_gene_patterns,
                              op = 'set') # op = 'add' adds gene names
 
@@ -245,8 +271,8 @@ partition_metacell <- function(matrix,
     # also introducing missing genes, with null contribution, in the w matrix
     missing_genes <- sapply(unique(data.h5ad$obs$metacell), function(metacell_i){
       #cells <- which(data.h5ad$obs$metacell == metacell_i)
-      missing <- !(rownames(matrix.dgCMatrix) %in% rownames(metacells_w.dgCMatrix))
-      missing_genes <- rownames(matrix.dgCMatrix)[missing]
+      missing <- !(rownames(matrix) %in% rownames(metacells_w.dgCMatrix))
+      missing_genes <- rownames(matrix)[missing]
       # this might be useful down the road;
       # but not now since we are interested in how it behaves metacells…
       #rowSums(matrix.dgCMatrix[missing_genes, cells])
@@ -264,15 +290,6 @@ partition_metacell <- function(matrix,
 }
 
 
-
-
-
-
-
-# example use case
-# mouse <- readRDS('group/davila/DB/MOUSE/Hou2023_WT.ace.out.rds')
-# matrix <- counts(mouse)
-# metacell.matrix <- partition_metacell(matrix)
 
 
 
