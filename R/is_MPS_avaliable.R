@@ -4,12 +4,13 @@ is_MPS_avaliable <- function(envname){
 
     #is_MPS_avaliable(envname = 'r-decomp')
 
-    is_python_package_installed(envname = envname, packages.vec = c('torch'))
-    torch <- reticulate::import('torch')
+    is_python_package_installed(envname = envname,
+                                packages.vec = c('torch'))
+    torch <- reticulate::import('torch', delay_load = TRUE)
 
     if(torch$backends$mps$is_available()){
         mps_device = torch$device("mps")
         message('--- MPS device avaliable ----')
-    }else{message("--- MPS device not found ---")}
-
+    }else{
+        message("--- MPS device not found ---")}
     }

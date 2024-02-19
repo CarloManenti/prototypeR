@@ -6,6 +6,7 @@ decomp_cnmf <- function(sce,
                         num_iterations=100,      # number of iterations used to build the consensus
                         num_workers=4,           # number of parallel processes
                         num_hvgenes=5000,        # number of over-dispersed genes to consider
+                        return_TPM=FALSE,            # do we want the TPM as W?
                         ## Quality metrics plots : Coherence of the decomposition level
                         density_threshold=0.01, # threshold to filter out prototypes|latents (max euclidean distance between replicates)
                         ## Folders to store the results of the runs
@@ -27,7 +28,8 @@ decomp_cnmf <- function(sce,
     # example usage
     # decomp_cnmf(sce)
 
-
+    # EXT - split this core functions into smaller ones to make use of previous
+    #       runs of cNMF.
 
     message('--- Checking packages ---')
     is_package_installed('reticulate')
@@ -47,6 +49,12 @@ decomp_cnmf <- function(sce,
     n_components <- as.integer(n_components)
     seed <- as.integer(seed)
     # since it does not make sense to extract a single latent (for now)
+
+    # if we want a given number of patterns
+    if(class(levels) == 'numeric'){
+        levels <- as.integer(levels)
+    }
+
     if(min(levels) < 2) levels <- seq(2, max(levels))
     density_threshold <- as.double(density_threshold)
 
@@ -111,7 +119,12 @@ decomp_cnmf <- function(sce,
     reducedDims(sce)[[result_name]] <- cnmf_h.dgCMatrix
 
     # Gene view
-    cnmf_w.dgCMatrix <- as(cnmf.model[[2]], 'sparseMatrix')
+    if(return_TPM){
+        data_field <- 3
+    } else {
+       data_field <- 2
+    }
+    cnmf_w.dgCMatrix <- as(cnmf.model[[data_field]], 'sparseMatrix')
     colnames(cnmf_w.dgCMatrix) <- patterns_names
     rownames(cnmf_w.dgCMatrix) <- rownames(sce)
     metadata(sce)[[result_name]] <- cnmf_w.dgCMatrix

@@ -6,10 +6,10 @@ package_warning <- function(package_x){
     # package_warning('ruler')
 
 
-
-    message('Please install ',
-        package_x,
-        ' to your home directory using install.packes(\'',
-        package_x,
-        '\', lib = \'</home/user.name/R>\')')
+    msg <- paste0('Please install ',
+                  package_x,
+                  ' to your home directory using install.packes(\'',
+                  package_x,
+                  '\', lib = \'</home/user.name/R>\')')
+    return(msg)
 }

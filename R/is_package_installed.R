@@ -14,5 +14,5 @@ is_package_installed <- function(package_x, lib.loc=NULL){
     if(!requireNamespace(package_x, quietly = TRUE, lib.loc=NULL)){
         stop(package_warning(package_x))
     }
-    return(TRUE)
+    # no return | side effect function
 }
