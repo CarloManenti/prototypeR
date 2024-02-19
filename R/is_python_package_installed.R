@@ -46,7 +46,7 @@ is_python_package_installed <- function(packages.vec,
     reticulate::virtualenv_install(envname = envname,
                                    packages = packages2install.vec)
   }else{
-    (message('All python packages are already installed'))
+    #(message('All python packages are already installed'))
   }
 
 }
