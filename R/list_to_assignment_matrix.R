@@ -1,3 +1,14 @@
+#' It transforms a List into an Assignment Matrix
+#'
+#' This function takes a list and returns a sparse assignment matrix.
+#'
+#' @param input.list <list or vector> the input list which will be transformed
+#' into an assignment matrix
+#' @return a sparse (dgCMatrix) assignment matrix
+#' @examples
+#' input.list = c('a', 'a', 'b', 'c')
+#' list_to_assignment_matrix(input.list)
+#' @export
 list_to_assignment_matrix <- function(input.list){
     ### Description ###
     # Defines a sparse membership matrix (with 1 and 0s) features x observations
@@ -8,9 +19,10 @@ list_to_assignment_matrix <- function(input.list){
     # list_to_assignment_matrix(input.list)
 
 
+
     elements.vec <- sort(unique(unlist(input.list)))
     membership.matrix <- t(sapply(elements.vec, function(element_i){
-                               as.numeric(input.list %in% element_i)
+                              as.numeric(input.list %in% element_i)
                            }))
     # giving names to the axis
     rownames(membership.matrix) <- elements.vec

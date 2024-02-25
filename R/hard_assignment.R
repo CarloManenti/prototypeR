@@ -1,26 +1,29 @@
+#' Hard Assignment of Latents to an Observation (row)
+#'
+#' This function performs hard assignment of latents (columns) to
+#' observations (rows) by using the highest weight as criteria of assignment.
+#'
+#' @param matrix <dgCMatrix or matrix generally> The matrix H (observations x
+#' latents) which will be used for the hard assignment.
+#' @param margin <either 1 or 2> dimension used to pick the maximum, 1 to
+#' work on the latents, so the rows!
+#' @return Returns a vector with the assigned latent for each cell.
+#' @examples
+#' sce <- decomp_va(sce, 5, max_epochs = 10)
+#' hard_assignment(reducedDim(sce, 'va'))
+#' @export
 hard_assignment <- function(matrix, margin = 1){
     ### Description ###
 
-    # Taken a Matrix cells x prototypes
+    # Takes a Matrix cells x prototypes
     # it returns a vector in which each cell
     # has the maximum contributing prototype assign to it
-
-    # example usage
-    # get the data.
-    # sce <- readRDS('~/sce.rds')
-    # normalize and reduce
-    # ace <- normalize.ace(sce)
-    # ace <- reduce.ace(ace)
-    # hard_assignment(ace$ACTION) # on the PCA H matrix
-
-
-
 
     hard_assignment <- apply(matrix,
                              margin,
                              function(col_i){
                                  # to avoid double assingment
-                                 # I select the mimum value among all
+                                 # this could be done better!
                                  min(which(col_i == max(col_i)))
                              }
                        )

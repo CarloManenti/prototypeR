@@ -1,3 +1,26 @@
+#' Checks if a Python Package is Available in a given Virtual Environment
+#'
+#' Handy function to check if a Python package is available in a specified
+#' virtual environment or not. If the virtual environment does not exists, it
+#' will create one with the same name. If the python package is not to be found,
+#' it will install it. It is based on reticulate!
+#'
+#' @param packages.vec <vector of characters> Vector of the needed python
+#'  packages.
+#' @param envname <character> default 'r-reticulate'; name of the virtual
+#' enviroment to be used. If the virtual environment already exists, it will
+#' use it to check if the packages are available. Otherwise it will create
+#' a new one with the specified name. The new environment can be removed with
+#' *reticulate::virtualenv_remove(envname = 'my-env')* and the list of all
+#' available packages can be seen using *reticulate::virtualenv_list()*.
+#' @param forced <bool> default TRUE. Whether to force the use of the specified
+#' virtual environment or not. Generally you want to specify the use of the
+#' virtual environment if you want to use right away the packages.
+#' @return nothing, it is a simple side-effect function. It will break the
+#' function if the package is not available. But it will fail gracefully.
+#' @examples
+#' is_python_package_installed(packages.vec = 'numpy', envname = 'r-decomp')
+#' @export
 is_python_package_installed <- function(packages.vec,
                                         envname='r-reticulate',
                                         forced=TRUE){
@@ -32,6 +55,8 @@ is_python_package_installed <- function(packages.vec,
   }
 
   # checking if the packages needed are already installed in the given env.
+  # forced is useful to use the correct virtual enviroment BEFORE loading the
+  # packages! Otherwise, it may lead to errors in the code.
   if(forced == TRUE){
     reticulate::use_virtualenv(envname)
   }
@@ -45,8 +70,6 @@ is_python_package_installed <- function(packages.vec,
     message(paste0(msg.chr, packages2install.vec))
     reticulate::virtualenv_install(envname = envname,
                                    packages = packages2install.vec)
-  }else{
-    #(message('All python packages are already installed'))
   }
 
 }

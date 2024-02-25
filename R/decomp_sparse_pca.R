@@ -1,11 +1,42 @@
+#' Decomposition Approach : Sparse-Matrix Principal Component Analysis
+#'
+#' This function performs Principal Component Analysis (PCA) keeping a
+#' sparse representation for the matrix and leveraging irlba::prcomp_irlba
+#' implementation.
+#'
+#' @param sce <SingleCellExperiment object> SCE object
+#' @param n_components <integer> number of Principal Components desired.
+#' Must be n_components == min(n_cells, n_genes)
+#' @param assay <character> default logcounts;
+#' specifying the assay to use, preferred raw counts!
+#' @param center <bool> default TRUE;
+#' Whether to center in a column wise fashion
+#' the assay prior to performing PCA.
+#' @param scale <bool> default TRUE;
+#' Whether to scale in a column wise fashion
+#' the assay prior to performing PCA.
+#' @param result_name <character> default 'pca';
+#' Name of used to store the result in the SingleCellExperiment object.
+#' @param return_model <bool> default FALSE; Whether to return also
+#' the model and not only
+#' the SingleCellExperiment object.
+#' @param seed <integer> default 42; to set the seed for reproducibility.
+#' @param verbose <bool> default FALSE; Whether to be prompted with message
+#' for each step of the analysis.
+#' @return either a SingleCellExperiment object with PCA representation for
+#' only genes, or the SingleCellExperiment object and the model
+#' used to perform PCA.
+#' @examples
+#' decomp_sparse_pca(sce, n_components = 50)
+#' @export
 decomp_sparse_pca <- function(sce,
                               n_components=50,
                               assay='logcounts',
                               center=TRUE,
                               scale=TRUE,
-                              seed=42,
                               result_name='pca',
                               return_model=FALSE,
+                              seed=42,
                               verbose=FALSE){
 ### Description ###
 # Computes PCA on a sparse matrix specified stored in a specific assays
@@ -13,7 +44,6 @@ decomp_sparse_pca <- function(sce,
 
 # example usage
 # decomp_sparse_pca(sce, 100)
-
 
     if(verbose == TRUE){
       message('--- Checking packages ---')

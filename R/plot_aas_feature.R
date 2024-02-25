@@ -1,3 +1,24 @@
+#' Handy Function for select_aas for Quality Metrics.
+#'
+#' This function provides quality metrics plots for select_aas model with .
+#'
+#' @param aas.model <model of select_aas> model obtained from select_aas()
+#' @param type <character> type of quality metric to be plotted.
+#' example : *total_var*.
+#' @param title <character> title for the plot.
+#' example : *Archetypes Variability*
+#' @param point_size <double> default 0.5; dimensions of the plotted point.
+#' @param line_size <double> default 0.5; width of the plotted lines.
+#' @param text_axis_size <integer or double> default 10; dimension of the text
+#' on the axis.
+#' @param plot_title_size <integer or double> default 15; dimension of
+#' the title.
+#' @param hjust <double> default 0.5; Position of the title (by default in the
+#' central).
+#' @return a Quality Metric plot defined by the type variable.
+#' @examples
+#' plot_aas_feature(aas.model, 'total_var', 'Archetypes Variability')
+#' @export
 plot_aas_feature <- function(aas.model,
                              type,
                              title,
@@ -18,8 +39,7 @@ plot_aas_feature <- function(aas.model,
     is_package_installed('ParetoTI')
     is_package_installed('ggplot2')
 
-
-    # defining variables
+    # enforcing the types
     point_size      = as.double(point_size)
     line_size       = as.double(line_size)
     text_axis_size  = as.integer(text_axis_size)

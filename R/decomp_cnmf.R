@@ -1,38 +1,51 @@
-#' Consensus Non-Negative Matrix Factorization
+#' Decomposition Approach : Consensus Non-Negative Matrix Factorization
 #'
-#'This function performs Consensus Non-Negative Matrix Factorization (cNMF)
-#'on an assay of a SingleCellExperiment and stores the results directly in
-#'the object.
+#' This function performs Consensus Non-Negative Matrix Factorization (cNMF)
+#' on an assay of a SingleCellExperiment and stores the results directly in
+#' the object.
 #'
 #' @param sce <SingleCellExperiment object> SCE object
 #' @param n_components <integer> number of Non-Negative Factors (NNF) desired.
 #' @param levels <vector of integers> sequence of number of components to
 #' investigate. It will run cNMF for each of these levels. The n_components
 #' must fall inside this interval.
-#' @param assay <character> specifying the assay to use, preferred raw counts!
-#' @param num_iterations <integer>  number of iterations used to build
+#' @param assay <character> default counts;
+#' specifying the assay to use, preferred raw counts!
+#' @param num_iterations <integer> default 100;
+#' number of iterations used to build
 #' the consensus matrices
-#' @param num_workers <integer> number of parallel processes
-#' @param num_hvgenes <integer> number of Highly Variable Genes to be selected
+#' @param num_workers <integer> default 0;
+#' number of parallel processes; if 0 it will detect the number of cores
+#' available in the machine and will set it to the max_number of cores - 2.
+#' Generally, it is best to set it yourself given the dimension of the data set.
+#' @param num_hvgenes <integer> default 5000;
+#' number of Highly Variable Genes to be selected
 #' prior to performing cNMF.
-#' @param return_TPM <bool> Whether to return the Transcript Per Million or
+#' @param return_TPM <bool> default FALSE;
+#' Whether to return the Transcript Per Million or
 #' the actual gene weights. Generally gene weights highlights better difference
 #' in the data.
-#' @param density_threshold <double> distance threshold (euclidean distance) of
+#' @param density_threshold <double> default 0.01;
+#' distance threshold (euclidean distance) of
 #' a NNF to its K Nearest Neighbors to be consider for building the
 #' consensus matrices.
-#' @param run_name <character> name of the specific run of cNMF, it will be also
+#' @param run_name <character> default Intermediate_results;
+#' name of the specific run of cNMF, it will be also
 #' the name of the dedicated folder with the intermediate results.
-#' @param output_dir <character> directory used to store intermediate results.
-#' @param result_name <character> name of used to store the result in the
+#' @param output_dir <character> default ./cnmf;
+#' directory used to store intermediate results.
+#' @param result_name <character> default cnmf;
+#' name of used to store the result in the
 #' SingleCellExperiment object.
-#' @param envname <character> specify the name of the python virtual
+#' @param envname <character> default r-decomp;
+#' specify the name of the python virtual
 #' environment to be used. If it does not exists it will create one and use it.
-#' @param return_model <bool> Whether to return also the model and not only
+#' @param return_model <bool> default FALSE;
+#' Whether to return also the model and not only
 #' the SingleCellExperiment object.
-#' @param seed <integer> to set the seed for reproducibility.
-#' @param verbose <bool> Whether to be prompted with message for each step
-#' of the analysis.
+#' @param seed <integer> default 42; to set the seed for reproducibility.
+#' @param verbose <bool> default FALSE;
+#' Whether to be prompted with message for each step of the analysis.
 #' @return either a SingleCellExperiment object with cNMF representation for
 #' both genes and cells, or the SingleCellExperiment object and the model
 #' used to perform cNMF.
@@ -46,7 +59,7 @@ decomp_cnmf <- function(sce,
                         levels,
                         assay='counts',
                         num_iterations=100,
-                        num_workers=4,
+                        num_workers=0,
                         num_hvgenes=5000,
                         return_TPM=FALSE,
                         density_threshold=0.01,
@@ -95,6 +108,12 @@ decomp_cnmf <- function(sce,
     sc <- reticulate::import('scanpy')
 
     num_iterations <- as.integer(num_iterations)
+    if(num_workers == 0){
+        num_workers <- parallel::detectCores() - 2
+        if(num_workers < 0){
+            num_workers <- 1
+        }
+    }
     num_workers    <- as.integer(num_workers)
     num_hvgenes    <- as.integer(num_hvgenes)
     n_components <- as.integer(n_components)

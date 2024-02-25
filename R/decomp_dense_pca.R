@@ -1,14 +1,59 @@
+#' Decomposition Approach : Dense-Matrix Principal Component Analysis
+#'
+#' This function performs Principal Component Analysis (PCA) by cohering
+#' the matrix to be dense and using sklr.decomposition.PCA() with a
+#' method of choice.
+#'
+#' @param sce <SingleCellExperiment object> SCE object
+#' @param n_components <integer> number of Principal Components desired.
+#' Must be n_components == min(n_cells, n_genes)
+#' @param assay <character> specifying the assay to use, preferred raw counts!
+#' @param method <character> by default 'randomized'.
+#' If **auto** : The solver is selected by a default policy based on X.shape
+#' and n_components: if the input data is larger than 500x500 and the
+#' number of components to extract is lower than 80% of the smallest
+#' dimension of the data, then the more efficient ‘randomized’
+#' method is enabled. Otherwise the exact full SVD
+#' is computed and optionally truncated afterwards.
+#' If **full** : run exact full SVD calling the standard LAPACK solver
+#' via scipy.linalg.svd and select the components by postprocessing
+#' If **arpack** : run SVD truncated to n_components calling ARPACK
+#' solver via scipy.sparse.linalg.svds. It requires strictly
+#' 0 < n_components < min(X.shape).
+#' If **randomized** : run randomized SVD by the method of Halko et al.
+#' (from *sklearn.decomposition.PCA*)
+#' @param center <bool> default TRUE; Whether to center in a column wise fashion
+#' the assay prior to performing PCA.
+#' @param scale <bool> default FALSE; Whether to scale in a column wise fashion
+#' the assay prior to performing PCA.
+#' @param result_name <character> default 'dense-pca';
+#' Name used to store the result in the SingleCellExperiment object.
+#' @param envname <character> default 'r-decomp';
+#' Specify the name of the python virtual
+#' environment to be used. If it does not exists it will create one and use it.
+#' @param return_model <bool> default FALSE; Whether to return also
+#' the model and not only
+#' the SingleCellExperiment object.
+#' @param seed <integer> default 42; to set the seed for reproducibility.
+#' @param verbose <bool> default FALSE; Whether to be prompted with message
+#' for each step of the analysis.
+#' @return either a SingleCellExperiment object with PCA representation for
+#' only genes, or the SingleCellExperiment object and the model
+#' used to perform PCA.
+#' @examples
+#' decomp_dense_pca(sce, n_components = 50)
+#' @export
 decomp_dense_pca <- function(sce,
-                       n_components=50,
-                       assay='logcounts',
-                       method='randomized',
-                       center=TRUE,
-                       scale=FALSE,
-                       seed=42,
-                       envname='r-decomp',
-                       result_name='pca',
-                       return_model=FALSE,
-                       verbose=FALSE){
+                             n_components=50,
+                             assay='logcounts',
+                             method='randomized',
+                             center=TRUE,
+                             scale=FALSE,
+                             result_name='dense-pca',
+                             envname='r-decomp',
+                             return_model=FALSE,
+                             seed=42,
+                             verbose=FALSE){
     ### Description ###
     # Computes pca on a single cell object assay !converts it to a dense matrix!
     # note : by setting the method you can select the type of pca
