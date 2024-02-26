@@ -71,7 +71,9 @@
 #' representation or the SingleCellExperiment object and the model
 #' used to perform MetaCell analysis.
 #' @examples
-#' #partition_metacells(sce, target_number_of_metacells = 2, min_umi = 5)
+#' library(packageX)
+#' data(sce)
+#' partition_metacells(sce, target_number_of_metacells = 2, min_umi = 5)
 #' @export
 partition_metacells <- function(sce,
                                target_number_of_metacells=100,
@@ -94,7 +96,7 @@ partition_metacells <- function(sce,
                                assay_name='full_run',
                                ignore_warnings=TRUE,
                                result_name='metacells',
-                               envname='r-partition',
+                               envname='r-decomp',
                                return_model=FALSE,
                                seed=42,
                                verbose=FALSE,

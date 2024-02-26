@@ -23,5 +23,8 @@ center and scale it in a column-wise fashion, or simply return the matrix
 as it is.
 }
 \examples{
-#center_and_scale(SingleCellExperiment::logcounts(sce), center = TRUE, scale = TRUE)
+library(packageX)
+library(SingleCellExperiment)
+data(sce)
+center_and_scale(SingleCellExperiment::logcounts(sce), center = TRUE, scale = TRUE)
 }

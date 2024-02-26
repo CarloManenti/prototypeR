@@ -19,7 +19,7 @@
 #' @return nothing, it is a simple side-effect function. It will break the
 #' function if the package is not available. But it will fail gracefully.
 #' @examples
-#' #is_python_package_installed(packages.vec = 'numpy', envname = 'r-decomp')
+#' is_python_package_installed(packages.vec = 'numpy', envname = 'r-decomp')
 #' @export
 is_python_package_installed <- function(packages.vec,
                                         envname='r-reticulate',

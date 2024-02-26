@@ -13,7 +13,7 @@ partition_graph(
   svd_solver = "auto",
   ignore_warnings = TRUE,
   result_name = "leiden",
-  envname = "r-partition",
+  envname = "r-decomp",
   return_model = FALSE,
   seed = 42,
   verbose = FALSE
@@ -76,5 +76,7 @@ SingleCellExperiment (SCE) object. It stores the memebership vector,
 the result of the function, directly in the colData slot of the SCE Object.
 }
 \examples{
-#partition_graph(sce)
+library(packageX)
+data(sce)
+partition_graph(sce)
 }

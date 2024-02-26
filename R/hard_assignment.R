@@ -9,7 +9,9 @@
 #' work on the latents, so the rows!
 #' @return Returns a vector with the assigned latent for each cell.
 #' @examples
-#' #hard_assignment(SingleCellExperiment::reducedDim(sce, 'pca'))
+#' library(packageX)
+#' data(sce)
+#' hard_assignment(SingleCellExperiment::reducedDim(sce, 'pca'))
 #' @export
 hard_assignment <- function(matrix, margin = 1){
     ### Description ###

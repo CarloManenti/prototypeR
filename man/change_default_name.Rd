@@ -22,5 +22,8 @@ This function changes the default result name if it is already present
 in a named list.
 }
 \examples{
-#result_name <- change_default_name('pca', SingleCellExperiment::reducedDimNames(sce))
+library('packageX')
+library(SingleCellExperiment)
+data(sce)
+result_name <- change_default_name('pca', SingleCellExperiment::reducedDimNames(sce))
 }

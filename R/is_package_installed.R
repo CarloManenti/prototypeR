@@ -12,8 +12,6 @@
 #' Computing (HPC).
 #' @return nothing, it is a simple side-effect function. It will break the
 #' function if the package is not available. But it will fail gracefully.
-#' @examples
-#' #is_package_installed('NotToBeFoundPackage')
 #' @export
 is_package_installed <- function(package_x, lib.loc=NULL){
     ### Description ###

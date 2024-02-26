@@ -12,7 +12,7 @@
 #' for each step of the analysis.
 #' @return nothing, it is a simple side-effect function.
 #' @examples
-#' #ignore_warnings(TRUE, verbose = TRUE)
+#' ignore_warnings(TRUE, verbose = TRUE)
 #' @export
 
 ignore_warnings <- function(ignore_warnings,

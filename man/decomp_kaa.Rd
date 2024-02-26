@@ -172,5 +172,7 @@ implementation and store directly in the SingleCellExperiment object the
 results.
 }
 \examples{
-#decomp_kaa(sce, n_components = 5, n_highly_variable_genes = 250, n_pcs = 10, n_waypoint_eigs = 3, verbose = TRUE, plots = TRUE)
+library('packageX')
+data(sce)
+decomp_kaa(sce, n_components = 5, n_highly_variable_genes = 250, n_pcs = 10, n_waypoint_eigs = 3, verbose = TRUE, plots = TRUE)
 }

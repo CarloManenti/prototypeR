@@ -41,7 +41,9 @@
 #' representations or the SingleCellExperiment object and the model
 #' used to perform X
 #' @examples
-#' #partition_graph(sce)
+#' library(packageX)
+#' data(sce)
+#' partition_graph(sce)
 #' @export
 partition_graph <- function(sce,
                             resolution=1,
@@ -51,7 +53,7 @@ partition_graph <- function(sce,
                             svd_solver='auto',
                             ignore_warnings=TRUE,
                             result_name='leiden',
-                            envname='r-partition',
+                            envname='r-decomp',
                             return_model=FALSE,
                             seed=42,
                             verbose=FALSE){
@@ -89,7 +91,15 @@ partition_graph <- function(sce,
     seed        <- as.integer(seed)
 
     # from SCE to AnnData
-    data.h5ad <- sce2adata_sparse(sce = sce,
+    # there is a problem if we store a clustering representation in colData
+    # this could be quite bad if we wanted to perform clustering at multiple
+    # resolutions.
+    # The rough fix is to simply transform to AnnData a SCE object with no
+    # colData and then store the clustering in the original SCE with all
+    # the colData
+    sce_x <- sce
+    SummarizedExperiment::colData(sce_x) <- NULL
+    data.h5ad <- sce2adata_sparse(sce = sce_x,
                                   envname = envname,
                                   main_layer = 'counts')
 

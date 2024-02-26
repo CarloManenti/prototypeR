@@ -123,5 +123,7 @@ specified compressed representation.One can perform AA on the whole data
 set, or on subsets of it via bootstrapping to account for possible outliers.
 }
 \examples{
-#decomp_aa(sce = sce, n_components = 5, reduced_representation = 'pca')
+library('packageX')
+data(sce)
+decomp_aa(sce = sce, n_components = 5, reduced_representation = 'pca')
 }

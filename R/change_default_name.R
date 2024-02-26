@@ -11,7 +11,10 @@
 #' to it. example result_name2 or result_name.
 #'
 #' @examples
-#' #result_name <- change_default_name('pca', SingleCellExperiment::reducedDimNames(sce))
+#' library('packageX')
+#' library(SingleCellExperiment)
+#' data(sce)
+#' result_name <- change_default_name('pca', SingleCellExperiment::reducedDimNames(sce))
 #' @export
 change_default_name <- function(result_name, name_list){
     ### Description ###

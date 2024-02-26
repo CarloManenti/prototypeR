@@ -15,7 +15,9 @@
 #' @return The SCE object with the new H representation stored in the
 #' reducedDim slot.
 #' @examples
-#' #store_H(sce, h.matrix = Matrix::t(matrix(stats::rnorm(2 * ncol(sce)), ncol = ncol(sce))), result_name = 'aa', latent_name = 'AA')
+#' library(packageX)
+#' data(sce)
+#' store_H(sce, h.matrix = Matrix::t(matrix(stats::rnorm(2 * ncol(sce)), ncol = ncol(sce))), result_name = 'aa', latent_name = 'AA')
 #' @export
 store_H <- function(sce,
                     h.matrix,

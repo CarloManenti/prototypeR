@@ -93,7 +93,9 @@
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' #decomp_kaa(sce, n_components = 5, n_highly_variable_genes = 250, n_pcs = 10, n_waypoint_eigs = 3, verbose = TRUE, plots = TRUE)
+#' library('packageX')
+#' data(sce)
+#' decomp_kaa(sce, n_components = 5, n_highly_variable_genes = 250, n_pcs = 10, n_waypoint_eigs = 3, verbose = TRUE, plots = TRUE)
 #' @export
 decomp_kaa <- function(sce,
                        n_components,

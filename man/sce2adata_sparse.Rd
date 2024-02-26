@@ -26,5 +26,7 @@ object and it keeps most of the fields intact! It is also very useful in
 converting the matrix types in a proper way.
 }
 \examples{
-#sce2adata_sparse(sce)
+library(packageX)
+data(sce)
+sce2adata_sparse(sce)
 }

@@ -54,7 +54,9 @@
 #' representations or the SingleCellExperiment object and the model
 #' used to perform X
 #' @examples
-#' #decomp_va(sce, n_components = 5, accelerator = 'cpu', verbose = TRUE, max_epochs = 10)
+#' library(packageX)
+#' data(sce)
+#' decomp_va(sce, n_components = 5, accelerator = 'cpu', verbose = TRUE, max_epochs = 10)
 #' @export
 decomp_va <- function(sce,
                       n_components,
@@ -108,7 +110,6 @@ decomp_va <- function(sce,
 
     # setting the seed for reproducibility
     scvi$settings$seed <- seed # scvi-tools seed
-    set.seed(seed)
 
     # checking for possible accelerations via MPS
     is_MPS_avaliable(envname = envname, verbose = verbose)

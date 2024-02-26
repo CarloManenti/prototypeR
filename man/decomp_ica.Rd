@@ -62,5 +62,7 @@ SingleCellExperiment object and stores the results directly in it.
 It is based on the ica package.
 }
 \examples{
-#decomp_ica(sce, n_components = 6, assay = 'logcounts')
+library('packageX')
+data(sce)
+decomp_ica(sce, n_components = 6, assay = 'logcounts')
 }

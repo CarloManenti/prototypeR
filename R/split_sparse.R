@@ -17,7 +17,9 @@
 #' @return A list with many smaller matrices, one for each unique element in
 #' the split_vector. The order of the matrices depends on the sorted variable.
 #' @examples
-#' #split_sparse(sparse_matrix = SingleCellExperiment::counts(sce), split_vector = sce$cluster)
+#' library(packageX)
+#' data(sce)
+#' split_sparse(sparse_matrix = SingleCellExperiment::counts(sce), split_vector = sce$cluster)
 #' @export
 split_sparse <- function(sparse_matrix,
                          split_vector,

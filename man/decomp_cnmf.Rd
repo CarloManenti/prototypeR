@@ -102,5 +102,7 @@ on an assay of a SingleCellExperiment and stores the results directly in
 the object.
 }
 \examples{
-#decomp_cnmf(sce = sce, n_components = 3, levels = 3 , num_iterations = 50, density_threshold = 1)
+library('packageX')
+data(sce)
+decomp_cnmf(sce = sce, n_components = 3, levels = 3 , num_iterations = 50, density_threshold = 1)
 }

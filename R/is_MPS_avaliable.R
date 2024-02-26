@@ -13,7 +13,7 @@
 #' TRUE, it will print a message to the end user stating whether it could
 #' use MPS acceleration or not.
 #' @examples
-#' #is_MPS_avaliable(envname = 'r-decomp', verbose = TRUE)
+#' is_MPS_avaliable(envname = 'r-decomp', verbose = TRUE)
 #' @export
 is_MPS_avaliable <- function(envname, verbose){
     ### Description ###

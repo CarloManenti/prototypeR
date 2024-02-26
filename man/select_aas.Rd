@@ -159,5 +159,7 @@ note: one can perform AA on the whole data set,
  or on subsets of it via bootstrapping to account for possible outliers.
 }
 \examples{
-#select_aas(sce, interval_of_k = seq(3, 4), boostrap_n = 2, reduced_representation = 'pca', verbose = TRUE)
+library(packageX)
+data(sce)
+select_aas(sce, interval_of_k = seq(3, 4), boostrap_n = 2, reduced_representation = 'pca', verbose = TRUE)
 }

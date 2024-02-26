@@ -30,5 +30,7 @@ if it is already present that name inside the reducedDimNames slot.
 Hence you want to use the store_W before the store_H function!
 }
 \examples{
-#store_W(sce, w.matrix =  Matrix::t(matrix(stats::rnorm(2 * nrow(sce)), nrow = nrow(sce))), result_name = 'aa', latent_name = 'AA')
+library(packageX)
+data(sce)
+store_W(sce, w.matrix =  Matrix::t(matrix(stats::rnorm(2 * nrow(sce)), nrow = nrow(sce))), result_name = 'aa', latent_name = 'AA')
 }

@@ -10,7 +10,7 @@
 #' been created
 #'
 #' @examples
-#' #check_dir('PhD')
+#' check_dir('PhD')
 #' @export
 check_dir <- function(directory2check.dir){
     ### Description ####

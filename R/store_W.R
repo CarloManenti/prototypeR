@@ -16,7 +16,9 @@
 #' @return The SCE object with the new W representation stored in the
 #' metadata slot.
 #' @examples
-#' #store_W(sce, w.matrix =  Matrix::t(matrix(stats::rnorm(2 * nrow(sce)), nrow = nrow(sce))), result_name = 'aa', latent_name = 'AA')
+#' library(packageX)
+#' data(sce)
+#' store_W(sce, w.matrix =  Matrix::t(matrix(stats::rnorm(2 * nrow(sce)), nrow = nrow(sce))), result_name = 'aa', latent_name = 'AA')
 #' @export
 store_W <- function(sce,
                     w.matrix,

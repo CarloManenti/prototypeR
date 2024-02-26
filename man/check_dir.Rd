@@ -20,5 +20,5 @@ This function taken as input a directory and checks if it exists, if it does
 not it creates it.
 }
 \examples{
-#check_dir('PhD')
+check_dir('PhD')
 }

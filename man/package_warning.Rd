@@ -17,6 +17,3 @@ This function takes the name of an R package we want to install and returns
 a nice message warning on how to install it. It is a general message, but
 it makes for a graceful break if the package has not been installed.
 }
-\examples{
-#package_warning('NotToBeFoundPackage')
-}

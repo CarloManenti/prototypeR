@@ -32,6 +32,8 @@
 #' obtained via MultiResolution Archetypal Analysis, or the SingleCellExperiment
 #' and the ACTIONet object used to perform the various steps
 #' @examples
+#' library(packageX)
+#' data(sce)
 #' #decomp_mraa(sce, n_components = 14, verbose = TRUE)
 #' @export
 

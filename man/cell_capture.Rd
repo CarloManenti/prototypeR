@@ -62,5 +62,7 @@ Hence, it gives an idea of how much of the annotations information
 is present in that given pattern, compared to all the others.
 }
 \examples{
-#cell_capture(sce, sce$cluster, 'pca')
+library('packageX')
+data(sce)
+cell_capture(sce, sce$cluster, 'pca')
 }

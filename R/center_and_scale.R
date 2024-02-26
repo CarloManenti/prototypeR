@@ -10,7 +10,10 @@
 #' @return The input matrix in dgCMatrix sparse format after centering,
 #' scaling, both or just as it is depending on the flag center and scale.
 #' @examples
-#' #center_and_scale(SingleCellExperiment::logcounts(sce), center = TRUE, scale = TRUE)
+#' library(packageX)
+#' library(SingleCellExperiment)
+#' data(sce)
+#' center_and_scale(SingleCellExperiment::logcounts(sce), center = TRUE, scale = TRUE)
 #' @export
 center_and_scale <- function(matrix.dgCMatrix, center=FALSE, scale=FALSE){
     ### Description ###

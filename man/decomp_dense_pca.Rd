@@ -74,5 +74,7 @@ the matrix to be dense and using sklr.decomposition.PCA() with a
 method of choice.
 }
 \examples{
-#decomp_dense_pca(sce, n_components = 50)
+library('packageX')
+data(sce)
+decomp_dense_pca(sce, n_components = 50)
 }

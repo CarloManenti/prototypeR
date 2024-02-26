@@ -25,5 +25,5 @@ participatory useful when working with Neural Networks like a Variational
 AutoEncoder.
 }
 \examples{
-#is_MPS_avaliable(envname = 'r-decomp', verbose = TRUE)
+is_MPS_avaliable(envname = 'r-decomp', verbose = TRUE)
 }

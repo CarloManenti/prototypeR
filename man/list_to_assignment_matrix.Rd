@@ -17,5 +17,5 @@ a sparse (dgCMatrix) assignment matrix
 This function takes a list and returns a sparse assignment matrix.
 }
 \examples{
-#list_to_assignment_matrix(input.list = c('a', 'a', 'b', 'c'))
+list_to_assignment_matrix(input.list = c('a', 'a', 'b', 'c'))
 }

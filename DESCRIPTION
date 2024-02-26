@@ -1,19 +1,43 @@
-Package: ruler
+Package: packageX
 Type: Package
 Title: Representing Single Cell Data via Decomposition and Partition Approaches
 Version: 0.0.9
 Authors@R: c(
     person('Carlo', 'Manenti', email = 'carlomanenti99@gmail.com',
-    role = c('aut', 'cre')
+    role = c('aut', 'cre'),
+    comment = c(ORCID = '0009-0001-2443-6293')
     ))
-Description: Multiple decomposition and partition 
-    methods to outline useful representations of single cell data. 
+Description: Framework to achieve useful representations of single cell data, 
+    by mean of unsupervised learning techniques spanning from decomposition to 
+    clustering approaches, with both linear and non-linear approaches. 
 License: GPL-2
 Encoding: UTF-8
 Depends: 
-    R (>= 3.5), SingleCellExperiment
-Imports: ACTIONet, ACTIONetExperiment, ComplexHeatmap, 
-    ica, irlba, reticulate, sceasy, scran, scrattch.hicat, methods, stats,
-    grDevices, Matrix, ParetoTI, S4Vectors, SummarizedExperiment, ggplot2
-biocViews: Software, BiomedicalInformatics, GeneExpressionWorkflow
+    R (>= 4.3.0), 
+    SingleCellExperiment
+Imports:
+    ComplexHeatmap, 
+    ggplot2,
+    grDevices,
+    ica, 
+    irlba, 
+    Matrix,
+    methods,
+    ParetoTI,
+    reticulate,
+    S4Vectors,
+    sceasy, 
+    scran, 
+    stats,
+    SummarizedExperiment
+Suggests:
+    ACTIONet,
+    ACTIONetExperiment,
+    patchwork,
+    scrattch.hicat,
+    testthat (>= 3.0.0)
+URL: https://gitlab.fht.org/carlo.manenti/ruler
+BugReports: https://gitlab.fht.org/carlo.manenti/ruler
+biocViews: StatisticalMethod
 RoxygenNote: 7.3.1
+Config/testthat/edition: 3

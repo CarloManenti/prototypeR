@@ -36,5 +36,5 @@ will create one with the same name. If the python package is not to be found,
 it will install it. It is based on reticulate!
 }
 \examples{
-#is_python_package_installed(packages.vec = 'numpy', envname = 'r-decomp')
+is_python_package_installed(packages.vec = 'numpy', envname = 'r-decomp')
 }

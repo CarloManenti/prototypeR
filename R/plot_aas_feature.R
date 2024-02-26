@@ -16,8 +16,6 @@
 #' @param hjust <double> default 0.5; Position of the title (by default in the
 #' central).
 #' @return a Quality Metric plot defined by the type variable.
-#' @examples
-#' #plot_aas_feature(aas.model, 'total_var', 'Archetypes Variability')
 #' @export
 plot_aas_feature <- function(aas.model,
                              type,

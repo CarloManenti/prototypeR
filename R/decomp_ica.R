@@ -29,7 +29,9 @@
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' #decomp_ica(sce, n_components = 6, assay = 'logcounts')
+#' library('packageX')
+#' data(sce)
+#' decomp_ica(sce, n_components = 6, assay = 'logcounts')
 #' @export
 decomp_ica <- function(sce,
                        n_components,

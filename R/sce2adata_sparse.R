@@ -12,7 +12,9 @@
 #' @param ... <extra arguments for the function convertFormat>
 #' @return an AnnData object with most of the fields of the original SCE
 #' @examples
-#' #sce2adata_sparse(sce)
+#' library(packageX)
+#' data(sce)
+#' sce2adata_sparse(sce)
 #' @export
 sce2adata_sparse <- function(sce,
                              envname='r-decomp',

@@ -25,5 +25,5 @@ This function sets the python environment to ignore warnings if provided
 with ignore_warning = TRUE.
 }
 \examples{
-#ignore_warnings(TRUE, verbose = TRUE)
+ignore_warnings(TRUE, verbose = TRUE)
 }

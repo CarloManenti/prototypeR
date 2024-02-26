@@ -98,7 +98,9 @@
 #' genes and cells, or the SingleCellExperiment object and the model used to
 #' perform archetypal analysis.
 #' @examples
-#' #select_aas(sce, interval_of_k = seq(3, 4), boostrap_n = 2, reduced_representation = 'pca', verbose = TRUE)
+#' library(packageX)
+#' data(sce)
+#' select_aas(sce, interval_of_k = seq(3, 4), boostrap_n = 2, reduced_representation = 'pca', verbose = TRUE)
 #' @export
 select_aas <- function(sce,
                        interval_of_k=NULL,

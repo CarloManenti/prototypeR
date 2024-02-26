@@ -43,6 +43,3 @@ a Quality Metric plot defined by the type variable.
 \description{
 This function provides quality metrics plots for select_aas model with .
 }
-\examples{
-#plot_aas_feature(aas.model, 'total_var', 'Archetypes Variability')
-}

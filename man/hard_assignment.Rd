@@ -21,5 +21,7 @@ This function performs hard assignment of latents (columns) to
 observations (rows) by using the highest weight as criteria of assignment.
 }
 \examples{
-#hard_assignment(SingleCellExperiment::reducedDim(sce, 'pca'))
+library(packageX)
+data(sce)
+hard_assignment(SingleCellExperiment::reducedDim(sce, 'pca'))
 }

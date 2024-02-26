@@ -56,5 +56,7 @@ sparse representation for the matrix and leveraging irlba::prcomp_irlba
 implementation.
 }
 \examples{
-#decomp_sparse_pca(sce, n_components = 50)
+library(packageX)
+data(sce)
+decomp_sparse_pca(sce, n_components = 50)
 }

@@ -24,5 +24,5 @@ a .pdf file of a ComplexHeatmap plot
 This function saves a ComplexHeatmap in .pdf format
 }
 \examples{
-#save_pdf(plot = ComplexHeatmap::Heatmap(seq(1, 10, length.out = 10), col = grDevices::blues9), file_name = '~/Documents/plot.pdf')
+save_pdf(plot = ComplexHeatmap::Heatmap(seq(1, 10, length.out = 10), col = grDevices::blues9), file_name = '~/Documents/plot.pdf')
 }

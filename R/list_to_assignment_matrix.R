@@ -6,7 +6,7 @@
 #' into an assignment matrix
 #' @return a sparse (dgCMatrix) assignment matrix
 #' @examples
-#' #list_to_assignment_matrix(input.list = c('a', 'a', 'b', 'c'))
+#' list_to_assignment_matrix(input.list = c('a', 'a', 'b', 'c'))
 #' @export
 list_to_assignment_matrix <- function(input.list){
     ### Description ###

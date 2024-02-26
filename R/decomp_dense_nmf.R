@@ -52,10 +52,12 @@
 #' representations or the SingleCellExperiment object and the model
 #' used to perform NMF.
 #' @examples
-#' #decomp_dense_nmf(sce, n_components = 3)
-#' #decomp_dense_nmf(sce, n_components = 3, method = 'bayesian')
-#' #decomp_dense_nmf(sce, n_components = 3, method = 'separable')
-#' #decomp_dense_nmf(sce, n_components = 3, method = 'default')
+#' library('packageX')
+#' data(sce)
+#' decomp_dense_nmf(sce, n_components = 3)
+#' decomp_dense_nmf(sce, n_components = 3, method = 'bayesian')
+#' decomp_dense_nmf(sce, n_components = 3, method = 'separable')
+#' decomp_dense_nmf(sce, n_components = 3, method = 'default')
 #' @export
 decomp_dense_nmf <- function(sce,
                        n_components,

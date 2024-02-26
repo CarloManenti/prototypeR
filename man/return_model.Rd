@@ -20,7 +20,7 @@ new_argumnet_name = new_argument>}
 }
 \value{
 either a SCE object or the SCE object and the model used to perform
-the decompostion or partition method
+the decomposition or partition method
 }
 \description{
 This function lets you return 2 different object, the SingleCellExperiment
@@ -29,5 +29,5 @@ SCE object or both the SCE and the model given the return_model boolean
 variable.
 }
 \examples{
-#return_model(sce = c(1, 2 ,3), model = c('a', 'b', 'c'), return_model = TRUE, bool = c(TRUE, FALSE))
+return_model(sce = c(1, 2 ,3), model = c('a', 'b', 'c'), return_model = TRUE, bool = c(TRUE, FALSE))
 }

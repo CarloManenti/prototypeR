@@ -97,5 +97,7 @@ if it is available. note: on Mac ARM architectures it will fail to use 'gpu'
 acceleration even if it is available and is detected!
 }
 \examples{
-#decomp_va(sce, n_components = 5, accelerator = 'cpu', verbose = TRUE, max_epochs = 10)
+library(packageX)
+data(sce)
+decomp_va(sce, n_components = 5, accelerator = 'cpu', verbose = TRUE, max_epochs = 10)
 }

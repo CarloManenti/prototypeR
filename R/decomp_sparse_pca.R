@@ -27,7 +27,9 @@
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' #decomp_sparse_pca(sce, n_components = 50)
+#' library(packageX)
+#' data(sce)
+#' decomp_sparse_pca(sce, n_components = 50)
 #' @export
 decomp_sparse_pca <- function(sce,
                               n_components=50,

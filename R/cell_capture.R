@@ -33,7 +33,9 @@
 #' max(pvalue) * cap_value + 10
 #' @return matrix metadata x prototypes with cell capture scores
 #' @examples
-#' #cell_capture(sce, sce$cluster, 'pca')
+#' library('packageX')
+#' data(sce)
+#' cell_capture(sce, sce$cluster, 'pca')
 #' @export
 cell_capture <- function(sce,
                          annotations,

@@ -87,8 +87,10 @@ implementations and initialization. The results are directly stored in
 the input SingleCellExperiment (SCE) object.
 }
 \examples{
-#decomp_dense_nmf(sce, n_components = 3)
-#decomp_dense_nmf(sce, n_components = 3, method = 'bayesian')
-#decomp_dense_nmf(sce, n_components = 3, method = 'separable')
-#decomp_dense_nmf(sce, n_components = 3, method = 'default')
+library('packageX')
+data(sce)
+decomp_dense_nmf(sce, n_components = 3)
+decomp_dense_nmf(sce, n_components = 3, method = 'bayesian')
+decomp_dense_nmf(sce, n_components = 3, method = 'separable')
+decomp_dense_nmf(sce, n_components = 3, method = 'default')
 }

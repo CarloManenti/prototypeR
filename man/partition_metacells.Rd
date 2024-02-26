@@ -22,7 +22,7 @@ partition_metacells(
   assay_name = "full_run",
   ignore_warnings = TRUE,
   result_name = "metacells",
-  envname = "r-partition",
+  envname = "r-decomp",
   return_model = FALSE,
   seed = 42,
   verbose = FALSE,
@@ -125,5 +125,7 @@ and stores the results directly in it. This function leverages the python
 implementation of MetaCell to achieve higher performance.
 }
 \examples{
-#partition_metacells(sce, target_number_of_metacells = 2, min_umi = 5)
+library(packageX)
+data(sce)
+partition_metacells(sce, target_number_of_metacells = 2, min_umi = 5)
 }

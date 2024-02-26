@@ -63,5 +63,7 @@ the ACTIONet framework. It stores directly in the SingleCellExperiment object
 the results. It can work in parallel using multiple cores.
 }
 \examples{
+library(packageX)
+data(sce)
 #decomp_mraa(sce, n_components = 14, verbose = TRUE)
 }

@@ -31,5 +31,7 @@ This function splits a sparse matrix (generally dgCMatrix) without coercing
 it into a dense representation.
 }
 \examples{
-#split_sparse(sparse_matrix = SingleCellExperiment::counts(sce), split_vector = sce$cluster)
+library(packageX)
+data(sce)
+split_sparse(sparse_matrix = SingleCellExperiment::counts(sce), split_vector = sce$cluster)
 }

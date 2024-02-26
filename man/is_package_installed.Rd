@@ -24,6 +24,3 @@ Handy function to check if an R package can be used or not.
 If the specified R package is nowhere to be found it will fail
 gracefully.
 }
-\examples{
-#is_package_installed('NotToBeFoundPackage')
-}

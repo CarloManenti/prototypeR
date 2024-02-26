@@ -74,7 +74,9 @@
 #' genes and cells, or the SingleCellExperiment object and the model used to
 #' perform archetypal analysis.
 #' @examples
-#' #decomp_aa(sce = sce, n_components = 5, reduced_representation = 'pca')
+#' library('packageX')
+#' data(sce)
+#' decomp_aa(sce = sce, n_components = 5, reduced_representation = 'pca')
 #' @export
 decomp_aa <- function(sce,
                       n_components,

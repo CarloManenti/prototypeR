@@ -29,5 +29,7 @@ adds the names to the rows and changes the name of the stored H matrix
 if it is already present that name inside reducedDim slot.
 }
 \examples{
-#store_H(sce, h.matrix = Matrix::t(matrix(stats::rnorm(2 * ncol(sce)), ncol = ncol(sce))), result_name = 'aa', latent_name = 'AA')
+library(packageX)
+data(sce)
+store_H(sce, h.matrix = Matrix::t(matrix(stats::rnorm(2 * ncol(sce)), ncol = ncol(sce))), result_name = 'aa', latent_name = 'AA')
 }

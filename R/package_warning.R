@@ -5,8 +5,6 @@
 #' it makes for a graceful break if the package has not been installed.
 #' @param package_x <character> the name of the package need to be installed
 #' @return a nice message providing instruction on how to install it
-#' @examples
-#' #package_warning('NotToBeFoundPackage')
 #' @export
 package_warning <- function(package_x){
     ### Description ###

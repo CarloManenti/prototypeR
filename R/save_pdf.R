@@ -10,7 +10,7 @@
 #' height of the plot
 #' @return a .pdf file of a ComplexHeatmap plot
 #' @examples
-#' #save_pdf(plot = ComplexHeatmap::Heatmap(seq(1, 10, length.out = 10), col = grDevices::blues9), file_name = '~/Documents/plot.pdf')
+#' save_pdf(plot = ComplexHeatmap::Heatmap(seq(1, 10, length.out = 10), col = grDevices::blues9), file_name = '~/Documents/plot.pdf')
 #' @export
 save_pdf <- function(plot,
                      file_name,
