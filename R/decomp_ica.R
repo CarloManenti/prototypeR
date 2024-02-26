@@ -24,11 +24,12 @@
 #' @param seed <integer> default 42; to set the seed for reproducibility.
 #' @param verbose <bool> default FALSE; Whether to be prompted with message
 #' for each step of the analysis.
+#' @param ... <extra arguments for the specific implementation of ica used>
 #' @return either a SingleCellExperiment object with PCA representation for
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' decomp_ica(sce, 6, logcounts)
+#' #decomp_ica(sce, n_components = 6, assay = 'logcounts')
 #' @export
 decomp_ica <- function(sce,
                        n_components,
@@ -48,12 +49,6 @@ decomp_ica <- function(sce,
     # FastICA
 
 
-    # example usage
-    #load(file = 'data/simulated_data.sce.rda')
-    #sce <- simulated_data.sce
-    #n_components <- 14
-    #decomp_ica(sce, 6, 'logcounts')
-
 
     if(verbose == TRUE){
         message('--- Checking packages ---')
@@ -69,12 +64,12 @@ decomp_ica <- function(sce,
         message(paste0('--- Performing ', method ,' ICA ---'))
     }
     # pre-processing the data
-    assay.dgCMatrix <- assay(sce, assay)
+    assay.dgCMatrix <- SummarizedExperiment::assay(sce, assay)
     centered_assay.dgCMatrix <- center_and_scale(assay.dgCMatrix,
                                                  center = center,
                                                  scale = scale)
     # performing ICA
-    ica.model <- ica::ica(X = t(centered_assay.dgCMatrix), # cells x features
+    ica.model <- ica::ica(X = Matrix::t(centered_assay.dgCMatrix), # cells x features
                           nc = n_components, # number of Independent components
                           method = method,
                           center = FALSE, # center may be performed before…
@@ -98,6 +93,8 @@ decomp_ica <- function(sce,
                    h.matrix = ica_h.matrix,
                    result_name = result_name,
                    latent_name = 'IC')
+
+
 
     # this is the return
     return_model(sce = sce, model = ica.model, return_model = return_model)

@@ -41,7 +41,7 @@
 #' representations or the SingleCellExperiment object and the model
 #' used to perform X
 #' @examples
-#' partition_graph(sce)
+#' #partition_graph(sce)
 #' @export
 partition_graph <- function(sce,
                             resolution=1,
@@ -87,12 +87,8 @@ partition_graph <- function(sce,
     n_pcs       <- as.integer(n_pcs)
     n_neighbors <- as.integer(n_neighbors)
     seed        <- as.integer(seed)
-    set.seed(seed)
-    # converting from SingleCellExperiment object to AnnData object
-    # counts.dgCMatrix <- counts(sce)
-    # data.h5ad <- sc$AnnData(X = t(counts.dgCMatrix))$copy()
-    # data.h5ad$obs_names <- colnames(counts.dgCMatrix)
-    # data.h5ad$var_names <- rownames(counts.dgCMatrix)
+
+    # from SCE to AnnData
     data.h5ad <- sce2adata_sparse(sce = sce,
                                   envname = envname,
                                   main_layer = 'counts')
@@ -131,11 +127,14 @@ partition_graph <- function(sce,
         message('--- Storing results ---')
     }
     # EXT - this could be a function on its own!
-    result_name <- change_default_name(result_name, colnames(colData(sce)))
+    result_name <- change_default_name(result_name, colnames(SummarizedExperiment::colData(sce)))
     membership.vec <- np$array(data.h5ad[['obs']][method])
     names(membership.vec) <- colnames(sce)
-    colData(sce) <- cbind(colData(sce), membership.vec)
-    colnames(colData(sce))[colnames(colData(sce)) == 'membership.vec'] <- result_name
-    # this is the return
+    SummarizedExperiment::colData(sce) <- cbind(SummarizedExperiment::colData(sce), membership.vec)
+    colnames(SummarizedExperiment::colData(sce))[colnames(SummarizedExperiment::colData(sce)) == 'membership.vec'] <- result_name
+
+
+
+     # this is the return
     return_model(sce = sce, model = data.h5ad, return_model = return_model)
 }

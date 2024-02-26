@@ -49,21 +49,22 @@
 #' @param seed <integer> default 42; to set the seed for reproducibility.
 #' @param verbose <bool> default FALSE; Whether to be prompted with message
 #' for each step of the analysis.
+#' @param ... <extra parameters for the function train>
 #' @return either a SingleCellExperiment object with both H and W
 #' representations or the SingleCellExperiment object and the model
 #' used to perform X
 #' @examples
-#' decomp_va(sce, 5, accelerator = 'cpu', verbose = T, max_epochs = 100)
+#' #decomp_va(sce, n_components = 5, accelerator = 'cpu', verbose = TRUE, max_epochs = 10)
 #' @export
 decomp_va <- function(sce,
                       n_components,
                       max_epochs=400,
-                      n_highly_variable_genes=5000, # nHVGs
+                      n_highly_variable_genes=5000,
                       assay='counts',
-                      categorical_covariate_keys = c(), # to account for possible categorical batches
-                      continuous_covariate_keys = c(),  # to account for possible continuous batches
-                      target_sum=NULL,   # for normalizing (if NULL uses the median)
-                      accelerator='cpu', # use GPU for TRAINING (must be installed and available!)
+                      categorical_covariate_keys=c(),
+                      continuous_covariate_keys=c(),
+                      target_sum=NULL,
+                      accelerator='cpu',
                       ignore_warnings=TRUE,
                       result_name='va',
                       envname='r-decomp',
@@ -83,10 +84,10 @@ decomp_va <- function(sce,
     is_package_installed('reticulate') # using python code in R
     is_package_installed('sceasy')     # moving from and to sce and anndata
 
-    packages.vec = c('scvi-tools',  # variational autoencoder
-                     'scanpy',      # single cell analysis framework
-                     'scikit-misc', # handy functions
-                     'scipy')       # data handlying
+    packages.vec <- c('scvi-tools',  # variational autoencoder
+                      'scanpy',      # single cell analysis framework
+                      'scikit-misc', # handy functions
+                      'scipy')       # data handlying
 
     is_python_package_installed(envname = envname,
                                 packages.vec = packages.vec)
@@ -100,13 +101,13 @@ decomp_va <- function(sce,
     scipy <- reticulate::import('scipy', delay_load = TRUE)
 
     # enforcing the type to avoid errors in python
-    n_components <- as.integer(n_components)
+    n_components            <- as.integer(n_components)
     n_highly_variable_genes <- as.integer(n_highly_variable_genes)
-    max_epochs <- as.integer(max_epochs)
-    seed <- as.integer(seed)
+    max_epochs              <- as.integer(max_epochs)
+    seed                    <- as.integer(seed)
 
     # setting the seed for reproducibility
-    scvi$settings$seed = seed # scvi-tools seed
+    scvi$settings$seed <- seed # scvi-tools seed
     set.seed(seed)
 
     # checking for possible accelerations via MPS
@@ -139,10 +140,10 @@ decomp_va <- function(sce,
         message('--- Feature Selection ---')
     }
     # Normalization
-    adata$layers[assay] = adata$X$copy()  # preserve counts
+    adata$layers[assay] <- adata$X$copy()  # preserve counts
     sc$pp$normalize_total(adata$copy(), target_sum = target_sum)
     sc$pp$log1p(adata$copy())
-    adata$raw = adata  # freeze the state in `.raw`
+    adata$raw <- adata  # freeze the state in `.raw`
 
     # Selection of Highly Variable Genes
     sc$pp$highly_variable_genes(adata,
@@ -161,7 +162,7 @@ decomp_va <- function(sce,
                                   categorical_covariate_keys = categorical_covariate_keys,
                                   continuous_covariate_keys = continuous_covariate_keys)
 
-    model = scvi$model$SCVI(adata, n_latent = n_components, ...)
+    model <- scvi$model$SCVI(adata, n_latent = n_components)
 
     # EXT…
     # os$environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # Make the fall back work!
@@ -171,7 +172,7 @@ decomp_va <- function(sce,
                 max_epochs = max_epochs,
                 ...)
 
-    va_h.dense = model$get_latent_representation()
+    va_h.dense <- model$get_latent_representation()
     # note: to sample the distribution we can use give_mean = FALSE
 
 

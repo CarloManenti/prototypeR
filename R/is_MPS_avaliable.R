@@ -13,7 +13,7 @@
 #' TRUE, it will print a message to the end user stating whether it could
 #' use MPS acceleration or not.
 #' @examples
-#' is_MPS_avaliable(envname = 'r-decomp', verbose = TRUE)
+#' #is_MPS_avaliable(envname = 'r-decomp', verbose = TRUE)
 #' @export
 is_MPS_avaliable <- function(envname, verbose){
     ### Description ###
@@ -26,7 +26,7 @@ is_MPS_avaliable <- function(envname, verbose){
     torch <- reticulate::import('torch', delay_load = TRUE)
 
     if(torch$backends$mps$is_available()){
-        mps_device = torch$device("mps")
+        mps_device <- torch$device("mps")
         if(verbose){
             message('--- MPS device avaliable ----')
         }

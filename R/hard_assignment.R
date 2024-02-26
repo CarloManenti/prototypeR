@@ -9,8 +9,7 @@
 #' work on the latents, so the rows!
 #' @return Returns a vector with the assigned latent for each cell.
 #' @examples
-#' sce <- decomp_va(sce, 5, max_epochs = 10)
-#' hard_assignment(reducedDim(sce, 'va'))
+#' #hard_assignment(SingleCellExperiment::reducedDim(sce, 'pca'))
 #' @export
 hard_assignment <- function(matrix, margin = 1){
     ### Description ###

@@ -8,6 +8,8 @@
 #'
 #' @param sce <SingleCellExperiment object> SCE object with at least one
 #' reducedDim representation saved.
+#' @param annotations description <vector> Vector stating the annotation for
+#' each cell.
 #' @param decomp <character> specifying the reducedDim representation to use
 #' @param alternative <character> specifying the alternative hypothesis,
 #' must be one of "two.sided" (default), "greater" or "less".
@@ -31,7 +33,7 @@
 #' max(pvalue) * cap_value + 10
 #' @return matrix metadata x prototypes with cell capture scores
 #' @examples
-#' cell_capture(sce, sce$cluster, 'pca')
+#' #cell_capture(sce, sce$cluster, 'pca')
 #' @export
 cell_capture <- function(sce,
                          annotations,
@@ -52,33 +54,26 @@ cell_capture <- function(sce,
 
   # in case anything brakes… Ask Carlo Manenti!
 
-  ## check for normality of the data!
 
 
   is_package_installed('SingleCellExperiment')
-
-
   sorted_annotation <- sort(unique(annotations))
-
-  #sorted_partition <- sort(unique(partitions))
-
   # getting the H matrix for a given decomposition level
   H <- SingleCellExperiment::reducedDim(sce, decomp)
   sorted_partition <- seq(ncol(H))
 
-  # getting the patterns for each annotations
-  #H_split <- split_sparse(H, annotations, by_col = T, sorted = T)
 
-  # computing
+
+  # computing Cell Capture Score
   res <- sapply(sorted_annotation, # looping over annotations
                 function(annotation_i){
                   sapply(sorted_partition, # looping over partitions
                          function(partition_i){
 
                            if(length(H[annotations == annotation_i , partition_i]) == 0) return(10e7)
-                           res_i <- t.test(H[annotations == annotation_i , partition_i],
-                                           H[annotations == annotation_i , -partition_i],
-                                           alternative = alternative)
+                           res_i <- stats::t.test(H[annotations == annotation_i , partition_i],
+                                                  H[annotations == annotation_i , -partition_i],
+                                                  alternative = alternative)
 
 
                            # extracting the p value
@@ -88,11 +83,13 @@ cell_capture <- function(sce,
   # Do we want to adjust for multiple testing?
   if(adj_pvalue){
     dimensions <- dim(res)
-    adj_pvalues <- p.adjust(as.vector(res), method = adj_pvalue_method)
+    adj_pvalues <- stats::p.adjust(as.vector(res), method = adj_pvalue_method)
     res <- matrix(adj_pvalues, nrow = dimensions[1], ncol = dimensions[2])
 
   }
 
+
+  # Post-Processing
   # Do we want to compute the -log10 p value?
   if(min_log_10){
     # computing the -log10
@@ -102,11 +99,15 @@ cell_capture <- function(sce,
     res[is.infinite(res)] <- max(res[!is.infinite(res)]) + 10 * cap_multiplier
   }}
 
+
+  # Storing results
   # giving names
   colnames(res) <- sorted_annotation
   rownames(res) <- sorted_partition
   # transposing to have identity x prototypes
   res <- t(res)
+
+
 
   return(res)}
 

@@ -35,7 +35,11 @@
 #' number of latents.
 #' note: Total amount of runs will be :
 #' max_iter ° bootstrap_n ° length(interval_of_k).
-#' @param bootstrap_n <integer> default 20; Number of bootstrap iterations.
+#' @param boostrap_n <integer or NA> default 20; number of bootstrap
+#' samples on random data to measure variability in archetype positions.
+#' Set to NA fit once to all data instead of bootstraping.
+#' When this option is positive seed bootstrap_seed and
+#' sample_prop must be provided. (from ParetoTI)
 #' @param bootstrap <bool> default TRUE; Whether to perform bootstrap.
 #' @param delta <integer> default 0;  Inflates the original polytope (simplex)
 #' fit such that it may contain more points of the data set. (from ParetoTI)
@@ -72,18 +76,6 @@
 #' If NULL the polytope fitting algorithm is run n times on
 #' the same data which is useful for evaluating how often the
 #' algorithm gets stuck in local optima. (from ParetoTI)
-#' @param method <character> default *pcha*; method for archetypal analysis:
-#' *pcha* : Principal Convex Hull,
-#' *kmeans* : KMeans
-#' *louvain* : Louvain (should be avoided)
-#' @param normalise_var <bool> default TRUE; either TRUE or FALSE,
-#' whether to normalise variance in position of archetypes by variance
-#' in data in each dimensions.(from ParetoTI).
-#' @param boostrap_number <integer or NA> default 20; number of bootstrap
-#' samples on random data to measure variability in archetype positions.
-#' Set to NA fit once to all data instead of bootstraping.
-#' When this option is positive seed bootstrap_seed and
-#' sample_prop must be provided. (from ParetoTI)
 #' @param point_size <double> default 0.5; dimensions of the plotted point.
 #' for quality metrics plots
 #' @param line_size <double> default 0.5; width of the plotted lines.
@@ -106,7 +98,7 @@
 #' genes and cells, or the SingleCellExperiment object and the model used to
 #' perform archetypal analysis.
 #' @examples
-#' decomp_aa(sce, 5, reduced_representation = 'pca')
+#' #select_aas(sce, interval_of_k = seq(3, 4), boostrap_n = 2, reduced_representation = 'pca', verbose = TRUE)
 #' @export
 select_aas <- function(sce,
                        interval_of_k=NULL,
@@ -116,7 +108,7 @@ select_aas <- function(sce,
                        n_dimensions=50,
                        reduced_representation=NULL,
                        max_iter=10,
-                       boostrap_number=20,
+                       boostrap_n=20,
                        bootstrap=TRUE,
                        delta=0,
                        conv_crit=1e-04,
@@ -130,7 +122,7 @@ select_aas <- function(sce,
                        plot_title_size=10,
                        hjust=0.5,
                        envname='r-decomp',
-                       return_model=F,
+                       return_model=FALSE,
                        seed=42,
                        verbose=FALSE){
     ### Description ###
@@ -149,7 +141,6 @@ select_aas <- function(sce,
     }
     is_package_installed('ParetoTI')
     is_package_installed('reticulate')
-    is_package_installed('patchwork')
     # installing useful python packages for AA analysis with ParetoTI
     is_python_package_installed(envname = 'r-decomp',
                                 packages.vec = c('py_pcha',
@@ -158,19 +149,19 @@ select_aas <- function(sce,
                                                  'numpy'))
 
     # enforcing bootstrapping parameters
-    n_dimensions         = as.integer(n_dimensions)
-    max_k                = as.integer(max_k)
-    max_iter             = as.integer(max_iter)
-    boostrap_number      = as.integer(boostrap_number)
-    delta                = as.integer(delta)
-    conv_crit            = as.double(conv_crit)
-    seed                 = as.integer(seed)
+    n_dimensions         <- as.integer(n_dimensions)
+    max_k                <- as.integer(max_k)
+    max_iter             <- as.integer(max_iter)
+    boostrap_n           <- as.integer(boostrap_n)
+    delta                <- as.integer(delta)
+    conv_crit            <- as.double(conv_crit)
+    seed                 <- as.integer(seed)
     # enforcing plotting variables
-    point_size      = as.double(point_size)
-    line_size       = as.double(line_size)
-    text_axis_size  = as.integer(text_axis_size)
-    plot_title_size = as.integer(plot_title_size)
-    hjust           = as.double(hjust)
+    point_size      <- as.double(point_size)
+    line_size       <- as.double(line_size)
+    text_axis_size  <- as.integer(text_axis_size)
+    plot_title_size <- as.integer(plot_title_size)
+    hjust           <- as.double(hjust)
 
     # setting the range of archetypes to test on the data
     if(is.null(interval_of_k) & is.null(max_k)){
@@ -189,7 +180,7 @@ select_aas <- function(sce,
     # cheking if the reduced dimension representation is already present
     if(!is.null(reduced_representation)){
         if(reduced_representation %in% SingleCellExperiment::reducedDimNames(sce)){
-            reduced_matrix <- t(reducedDim(sce, reduced_representation))
+            reduced_matrix <- Matrix::t(SingleCellExperiment::reducedDim(sce, reduced_representation))
         }else{
           stop('Please provide a reduced representation present in the SingleCellExperiment object')
         }
@@ -215,19 +206,19 @@ select_aas <- function(sce,
         reduced_matrix <- assay(sce, assay)
     }else{
         # we need to transpose the matrix to have it features x cells
-        reduced_matrix <- t(reducedDims(sce)[[reduction_method]])
+        reduced_matrix <- Matrix::t(SingleCellExperiment::reducedDims(sce)[[reduction_method]])
     }
 
 
 
     if(verbose){
-        message('--- Bootstraping Archetypes across Resolutions ---')
+        message('--- Bootstraping Archetypes Across Resolutions ---')
     }
     aas.model = ParetoTI::k_fit_pch(data            = reduced_matrix,
                                     ks              = interval_of_k,
                                     check_installed = TRUE,
                                     bootstrap       = bootstrap,
-                                    bootstrap_N     = boostrap_number,
+                                    bootstrap_N     = boostrap_n,
                                     maxiter         = max_iter,
                                     bootstrap_type  = parallel_type,
                                     seed            = seed,
@@ -280,11 +271,10 @@ select_aas <- function(sce,
                                      plot_title_size = plot_title_size,
                                      hjust = hjust)
 
-    library(patchwork)
-    quality_plot <- variance_explained_plot /
-                    variance_gain_plot      /
-                    total_variance_plot     /
-                    t_ratio_plot
+    quality_plot <- list(variance_explained = variance_explained_plot,
+                         variance_gain = variance_gain_plot,
+                         total_variance = total_variance_plot,
+                         t_ratio = t_ratio_plot)
 
 
 

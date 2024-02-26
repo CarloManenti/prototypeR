@@ -62,31 +62,31 @@
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' prior_knowledge = list('0' = list('gene_set_1' = list("KLHL17",
-#'                                                      "CCNL2",
-#'                                                      "ATAD3B",
-#'                                                      "NOL9"),
-#'                                  'gene_set_2' = list("CENPS-CORT",
-#'                                                      "FBXO2",
-#'                                                      "KLHL21")),
-#'                        '1' = list('gene_set_1' = list("NPPA",
-#'                                                       "FHAD1",
-#'                                                       "FBXO42",
-#'                                                       "ATP13A2"),
-#'                                   'gene_set_3' = list("PADI2",
-#'                                                       "AHDC1",
-#'                                                       "PPP1R8",
-#'                                                       "LAPTM5")),
-#'                  # set of genes which will be evaluated for all the
-#'                  # cells in data…
-#'                  'global' = list('gene_set_4' = list("AZIN2",
-#'                                                      "ZSCAN20",
-#'                                                      "ZC3H12A")))
-#' decomp_kb(sce,
-#'           metadata_key = 'is.doublet',
-#'           prior_knowledge = prior_knowledge
-#'           n_hvgs = NULL,
-#'           num_epochs = 1000)
+#' # prior_knowledge = list('0' = list('gene_set_1' = list("KLHL17",
+#' #                                                      "CCNL2",
+#' #                                                      "ATAD3B",
+#' #                                                      "NOL9"),
+#' #                                  'gene_set_2' = list("CENPS-CORT",
+#' #                                                      "FBXO2",
+#' #                                                      "KLHL21")),
+#' #                        '1' = list('gene_set_1' = list("NPPA",
+#' #                                                       "FHAD1",
+#' #                                                       "FBXO42",
+#' #                                                       "ATP13A2"),
+#' #                                   'gene_set_3' = list("PADI2",
+#' #                                                       "AHDC1",
+#' #                                                       "PPP1R8",
+#' #                                                       "LAPTM5")),
+#' #                  # set of genes which will be evaluated for all the
+#' #                  # cells in data…
+#' #                  'global' = list('gene_set_4' = list("AZIN2",
+#' #                                                      "ZSCAN20",
+#' #                                                      "ZC3H12A")))
+#' # decomp_kb(sce,
+#' #           metadata_key = 'is.doublet',
+#' #           prior_knowledge = prior_knowledge,
+#' #           n_hvgs = NULL,
+#' #           num_epochs = 100)
 #' @export
 decomp_kb <- function(sce,
                       metadata_key,
@@ -164,7 +164,7 @@ decomp_kb <- function(sce,
     is_package_installed('reticulate')
     is_package_installed('scran')      # selecting HvGs
     is_package_installed('sceasy')     # moving from and to sce and anndata
-    packages.vec = c('scSpectra', 'pandas', 'pyvis', 'numpy')
+    packages.vec <- c('scSpectra', 'pandas', 'pyvis', 'numpy')
     is_python_package_installed(envname      = envname,
                                 packages.vec = packages.vec)
 
@@ -180,17 +180,17 @@ decomp_kb <- function(sce,
     if(!is.null(n_components)){
         n_components <- as.integer(n_components)
     }
-    n_markers = as.integer(n_markers)
-    num_epochs = as.integer(num_epochs)
+    n_markers <- as.integer(n_markers)
+    num_epochs <- as.integer(num_epochs)
     if(min_gs_num == 0){
         min_gs_num <- 1
         warning('Forcing the min_gs_num to 1; must be a positive integer')
     }
-    min_gs_num = as.integer(min_gs_num)
+    min_gs_num <-as.integer(min_gs_num)
 
     metadata.in_use <- !is.null(metadata_key)
     if(metadata.in_use){
-        colData(sce)[[metadata_key]] <- as.character(colData(sce)[[metadata_key]])
+      SummarizedExperiment::colData(sce)[[metadata_key]] <- as.character(SummarizedExperiment::colData(sce)[[metadata_key]])
     }
 
     # converting SCE into AnnData (with sparse matrix)
@@ -215,7 +215,7 @@ decomp_kb <- function(sce,
         check_gene_set_dictionary <- spectra$Spectra_util$check_gene_set_dictionary
         # to convert from r to python correctly the variable type.
         prior_knowledge <- reticulate::r_to_py(prior_knowledge)
-        prior_knowledge = check_gene_set_dictionary(adata       = adata,
+        prior_knowledge <- check_gene_set_dictionary(adata       = adata,
                                                     annotations = prior_knowledge,
                                                     obs_key     = metadata_key,
                                                     global_key  = 'global')
@@ -249,19 +249,19 @@ decomp_kb <- function(sce,
     if(verbose){
         message('--- Running Knowledge Based Decomposition ---')
     }
-    model = spectra$est_spectra(adata               = adata,
-                                L                   = n_components,
-                                gene_set_dictionary = prior_knowledge,
-                                use_highly_variable = use_highly_variable,
-                                use_cell_types      = use_metadata,
-                                cell_type_key       = metadata_key,
-                                use_weights         = use_weights,
-                                lam                 = lam,
-                                delta               = delta,
-                                n_top_vals          = n_markers,
-                                overlap_threshold   = gene_set_confidence_assignment,
-                                min_gs_num          = min_gs_num,
-                                num_epochs          = num_epochs)
+    model <- spectra$est_spectra(adata               = adata,
+                                  L                   = n_components,
+                                  gene_set_dictionary = prior_knowledge,
+                                  use_highly_variable = use_highly_variable,
+                                  use_cell_types      = use_metadata,
+                                  cell_type_key       = metadata_key,
+                                  use_weights         = use_weights,
+                                  lam                 = lam,
+                                  delta               = delta,
+                                  n_top_vals          = n_markers,
+                                  overlap_threshold   = gene_set_confidence_assignment,
+                                  min_gs_num          = min_gs_num,
+                                  num_epochs          = num_epochs)
     ############################################################################
 
 
@@ -271,12 +271,12 @@ decomp_kb <- function(sce,
         message('--- Storing Results ---')
     }
     # general parameters
-    result_name <- change_default_name(result_name, reducedDimNames(sce))
+    result_name <- change_default_name(result_name, SingleCellExperiment::reducedDimNames(sce))
     # pattern names will be defined later…
 
     # Cell View
     kb_h.dense <- model$cell_scores
-    kb_h.dgCmatrix <- as(kb_h.dense, 'sparseMatrix')
+    kb_h.dgCmatrix <- methods::as(kb_h.dense, 'sparseMatrix')
     # Setting the number of patterns if they were selected by default
     if(is.null(n_components)){
       n_components <- ncol(kb_h.dgCmatrix)
@@ -285,12 +285,12 @@ decomp_kb <- function(sce,
     colnames(kb_h.dgCmatrix) <- patterns_names #since we want to keep the model
     # assignment of cells to specific-patterns
     rownames(kb_h.dgCmatrix) <- colnames(sce)
-    reducedDims(sce)[[result_name]] <- kb_h.dgCmatrix
+    SingleCellExperiment::reducedDims(sce)[[result_name]] <- kb_h.dgCmatrix
 
     # Gene View
     # Spectra factors the patterns of the W matrix
-    kb_w.dense <- t(as.matrix(adata$uns['SPECTRA_factors']))
-    kb_w.dgCmatrix <- as(kb_w.dense, 'sparseMatrix')
+    kb_w.dense <- Matrix::t(as.matrix(adata$uns['SPECTRA_factors']))
+    kb_w.dgCmatrix <- methods::as(kb_w.dense, 'sparseMatrix')
     colnames(kb_w.dgCmatrix) <- patterns_names #since we might be interested
     #in the assignment provided by the model of a gene set to a specific gene.
     if(use_highly_variable){
@@ -299,7 +299,7 @@ decomp_kb <- function(sce,
     }else{
         rownames(kb_w.dgCmatrix) <- rownames(sce)
     }
-    metadata(sce)[[result_name]] <- kb_w.dgCmatrix
+    S4Vectors::metadata(sce)[[result_name]] <- kb_w.dgCmatrix
     ############################################################################
 
 
@@ -313,21 +313,21 @@ decomp_kb <- function(sce,
         }else{
             marker_order <- paste0(rep('top_', ), seq_len(n_markers), rep('_marker'))
         }
-        markers4set <- t(as.matrix(adata$uns['SPECTRA_markers']))
+        markers4set <- Matrix::t(as.matrix(adata$uns['SPECTRA_markers']))
         colnames(markers4set) <- patterns_names
         rownames(markers4set) <- marker_order
-        metadata(sce)[[paste0(result_name, '_markers')]] <- markers4set
+        S4Vectors::metadata(sce)[[paste0(result_name, '_markers')]] <- markers4set
 
         ## Interpretation of Factors
         # 'index' + '-X-' + 'cell type specificity' + '-X-' + 'assigned label', ...]
         factors_interpretation <- adata$uns['SPECTRA_overlap']
         fact_interpretation <- paste0(result_name, '_factors_interpretation')
-        metadata(sce)[[fact_interpretation]] <- factors_interpretation
+        S4Vectors::metadata(sce)[[fact_interpretation]] <- factors_interpretation
 
         ## Influence of the Prior on the Factors
         prior_influence <- model$return_eta_diag()
         names(prior_influence) <- patterns_names
-        metadata(sce)[[paste0(result_name, '_prior_influence')]] <- prior_influence
+        S4Vectors::metadata(sce)[[paste0(result_name, '_prior_influence')]] <- prior_influence
 
         ## Gene-Gene graph
         if(!is.null(ggg_metadata)){ # do we want a cell-type specific graph?
@@ -336,7 +336,7 @@ decomp_kb <- function(sce,
           soft_graph <- as.matrix(model$return_graph())
         }
         # storing the graph
-        metadata(sce)[[paste0(result_name, '_GeneGeneGraph')]] <- soft_graph
+        S4Vectors::metadata(sce)[[paste0(result_name, '_GeneGeneGraph')]] <- soft_graph
     }
     ############################################################################
 

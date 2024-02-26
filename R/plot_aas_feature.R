@@ -17,7 +17,7 @@
 #' central).
 #' @return a Quality Metric plot defined by the type variable.
 #' @examples
-#' plot_aas_feature(aas.model, 'total_var', 'Archetypes Variability')
+#' #plot_aas_feature(aas.model, 'total_var', 'Archetypes Variability')
 #' @export
 plot_aas_feature <- function(aas.model,
                              type,
@@ -40,11 +40,11 @@ plot_aas_feature <- function(aas.model,
     is_package_installed('ggplot2')
 
     # enforcing the types
-    point_size      = as.double(point_size)
-    line_size       = as.double(line_size)
-    text_axis_size  = as.integer(text_axis_size)
-    plot_title_size = as.integer(plot_title_size)
-    hjust           = as.double(hjust)
+    point_size      <- as.double(point_size)
+    line_size       <- as.double(line_size)
+    text_axis_size  <- as.integer(text_axis_size)
+    plot_title_size <- as.integer(plot_title_size)
+    hjust           <- as.double(hjust)
 
 
 

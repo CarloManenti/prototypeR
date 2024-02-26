@@ -78,8 +78,7 @@
 #' representations or the SingleCellExperiment object and the model
 #' used to perform Recursive Clustering
 #' @examples
-#' **it can not be run on such small dataset**
-#' partition_recursive(sce, de.score.th = 70, n_iter = 100, q.diff.th = 0.2)
+#' # it can not be run on such small data set
 #' @export
 partition_recursive<- function(sce,
                                de.score.th=150,
@@ -125,18 +124,16 @@ partition_recursive<- function(sce,
             message(paste0('note: ',mc.cores ,' cores used'))
         }
     }
-    # setting the seed for reproducibility
-    set.seed(seed)
 
 
 
     if(verbose){
         message('--- Pre-processing ---')
     }
-    counts.dgCMatrix <- counts(sce)
+    counts.dgCMatrix <- SingleCellExperiment::counts(sce)
     # might be quite slow!
     cpm.dgCMatrix <- scrattch.hicat::cpm(counts.dgCMatrix)
-    logcounts.dgCMatrix <- as(log2(cpm.dgCMatrix + 1), 'sparseMatrix')
+    logcounts.dgCMatrix <- methods::as(log2(cpm.dgCMatrix + 1), 'sparseMatrix')
 
 
 
@@ -169,15 +166,15 @@ partition_recursive<- function(sce,
     if(verbose){
         message('--- Storing results ---')
     }
-    result_name <- change_default_name(result_name, colnames(colData(sce)))
+    result_name <- change_default_name(result_name, colnames(SummarizedExperiment::colData(sce)))
     names(recursive.model[['cl.result']])[1] <- result_name
     recursive_clustering <- recursive.model[['cl.result']][1]
-    colData(sce) <- cbind(colData(sce), result_name = recursive_clustering)
+    SummarizedExperiment::colData(sce) <- cbind(SummarizedExperiment::colData(sce), result_name = recursive_clustering)
 
 
 
     # this is the return
-    return_model(sce = sce, model = result, return_model = return_model)
+    return_model(sce = sce, model = recursive.model, return_model = return_model)
 }
 
 

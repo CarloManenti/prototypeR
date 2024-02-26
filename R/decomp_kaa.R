@@ -93,8 +93,7 @@
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' decomp_kaa(sce, n_components = 5, n_highly_variable_genes = 250, n_pcs = 10,
-#' n_waypoint_eigs = 3, verbose = TRUE, plots = TRUE)
+#' #decomp_kaa(sce, n_components = 5, n_highly_variable_genes = 250, n_pcs = 10, n_waypoint_eigs = 3, verbose = TRUE, plots = TRUE)
 #' @export
 decomp_kaa <- function(sce,
                        n_components,
@@ -178,12 +177,12 @@ decomp_kaa <- function(sce,
                                 packages.vec = packages.vec)
     #.rs.restartR() in case there are problems with the loading metacells
     # enforcing the use of the correct environment
-    seacells <- reticulate::import('SEACells', delay_load = TRUE)      # kernel archetypal analysis
-    sc <- reticulate::import('scanpy', delay_load = TRUE)              # pre-processing for kernela
-    ad <- reticulate::import('anndata', delay_load = TRUE)             # passing from SCE to anndat
-    plt <- reticulate::import('matplotlib.pyplot', delay_load = TRUE)  # visualizing results
-    np <- reticulate::import('numpy', delay_load = TRUE)               # basic handling of data
-    sns <- reticulate::import('seaborn', delay_load = TRUE)            # for quality plotting
+    seacells <- reticulate::import('SEACells', delay_load = TRUE)       # kernel archetypal analysis
+    sc  <- reticulate::import('scanpy', delay_load = TRUE)              # pre-processing for kernela
+    ad  <- reticulate::import('anndata', delay_load = TRUE)             # passing from SCE to anndat
+    plt <- reticulate::import('matplotlib.pyplot', delay_load = TRUE)   # visualizing results
+    np  <- reticulate::import('numpy', delay_load = TRUE)               # basic handling of data
+    sns <- reticulate::import('seaborn', delay_load = TRUE)             # for quality plotting
 
 
 
@@ -219,11 +218,11 @@ decomp_kaa <- function(sce,
     if(verbose){
         message('--- Converting SCE into AnnData ---')
     }
-    matrix.dgCMatrix <- counts(sce)
-    data.h5ad <- ad$AnnData(t(matrix.dgCMatrix), dtype = 'float32')
+    matrix.dgCMatrix    <- SingleCellExperiment::counts(sce)
+    data.h5ad           <- ad$AnnData(Matrix::t(matrix.dgCMatrix), dtype = 'float32')
     data.h5ad$obs_names <- colnames(matrix.dgCMatrix)
     data.h5ad$var_names <- rownames(matrix.dgCMatrix)
-    data.h5ad$obs       <- reticulate::r_to_py(as.data.frame(colData(sce)))
+    data.h5ad$obs       <- reticulate::r_to_py(as.data.frame(SummarizedExperiment::colData(sce)))
     data.h5ad$obs$index <- colnames(sce)
     # enforcing unique feature names
     data.h5ad$var_names_make_unique()
@@ -260,9 +259,9 @@ decomp_kaa <- function(sce,
         # visualizing the variance explained by the PCs
         # saving the plot
         plot_name.pdf <- paste0(figures_dir, elbow_plot_name)  # .pdf file
-        pdf(plot_name.pdf)
+        grDevices::pdf(plot_name.pdf)
         sc$pl$pca_variance_ratio(sc.obj, n_pcs = max_n_comps_pca)
-        dev.off()
+        grDevices::dev.off()
     }
     # setting the number of PCs wanted by sub-setting
     # (this can not be performed from terminal)
@@ -279,18 +278,20 @@ decomp_kaa <- function(sce,
         n_components <- as.integer(n_components)
     }
     # Setting the number of way points
-    if(is.null(n_waypoint_eigs)) n_waypoint_eigs = as.integer(15)
+    if(is.null(n_waypoint_eigs)){
+        n_waypoint_eigs = as.integer(15)
+    }
     # this is quite tricky since it will crash the code!
     # Furthermore, using more than 15 waypoints is a one way trip to crash town.
     # Ideally we need to test further when the code crash or not.
     # Would be even better an actual documentation…
 
     # Designing the model
-    kernel_aa.model = seacells$core$SEACells(ad = sc.obj,
-                                             build_kernel_on     = kernel_dimension,
-                                             n_SEACells          = n_components,
-                                             n_waypoint_eigs     = n_waypoint_eigs,
-                                             convergence_epsilon = convergence_epsilon)
+    kernel_aa.model <- seacells$core$SEACells(ad = sc.obj,
+                                              build_kernel_on     = kernel_dimension,
+                                              n_SEACells          = n_components,
+                                              n_waypoint_eigs     = n_waypoint_eigs,
+                                              convergence_epsilon = convergence_epsilon)
 
     # Performing the Kernel 'Trick'
     kernel_aa.model$construct_kernel_matrix()
@@ -309,12 +310,12 @@ decomp_kaa <- function(sce,
         # making it dense
         kernel_matrix_plot <- as.matrix(kernel_matrix_plot)
         kernel_matrix.plot <- ComplexHeatmap::Heatmap(kernel_matrix_plot,
-                                                      col = blues9)
+                                                      col = grDevices::blues9)
         # saving the plot
         plot_name.pdf <- paste0(figures_dir, kernel_matrix_plot_name)
-        pdf(file = plot_name.pdf)
+        grDevices::pdf(file = plot_name.pdf)
         ComplexHeatmap::draw(kernel_matrix.plot)
-        dev.off() # free memory closing plots!
+        grDevices::dev.off() # free memory closing plots!
     }
 
     # Computing Archetypes
@@ -349,7 +350,7 @@ decomp_kaa <- function(sce,
     membership.vec <- as.integer(gsub(".*-","", membership.vec))
     # assigning cell names to the membership vector
     names(membership.vec) <- rownames(membership.matrix)
-    colData(sce)[[result_name]] <- membership.vec
+    SummarizedExperiment::colData(sce)[[result_name]] <- membership.vec
 
     # gene view
     kernel_aa_W.obj <- seacells$core$summarize_by_soft_SEACell(sc.obj,
@@ -365,14 +366,14 @@ decomp_kaa <- function(sce,
     kernel_aa_W.obj$layers['log1p'] <- sc$pp$log1p(kernel_aa_W.obj['X'],
                                                    copy = TRUE)
     # finally storing the gene view
-    kaa_w.matrix <- t(kernel_aa_W.obj$layers['log1p'])
+    kaa_w.matrix <- Matrix::t(kernel_aa_W.obj$layers['log1p'])
     sce <- store_W(sce = sce,
                    w.matrix = kaa_w.matrix,
                    latent_name = 'KA',
                    result_name = result_name)
 
     # cell view
-    kaa_h.matrix <- t(kernel_aa.model$A_)
+    kaa_h.matrix <- Matrix::t(kernel_aa.model$A_)
     sce <- store_H(sce = sce,
                    h.matrix = kaa_h.matrix,
                    result_name = result_name,

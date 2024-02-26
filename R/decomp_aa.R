@@ -74,7 +74,7 @@
 #' genes and cells, or the SingleCellExperiment object and the model used to
 #' perform archetypal analysis.
 #' @examples
-#' decomp_aa(sce, 5, reduced_representation = 'pca')
+#' #decomp_aa(sce = sce, n_components = 5, reduced_representation = 'pca')
 #' @export
 decomp_aa <- function(sce,
                       n_components,
@@ -107,15 +107,16 @@ decomp_aa <- function(sce,
         message('--- Checking packages ---')
     }
 
-    is_python_package_installed(packages.vec = 'geosketch', envname = envname)
+    is_python_package_installed(packages.vec = c('py-pcha', 'geosketch'), envname = envname)
     is_package_installed('ParetoTI')
 
-    n_components <- as.integer(n_components)
-    n_dimensions <- as.integer(n_dimensions)
-    conv_crit    <- as.double(conv_crit)
-    seed         <- as.integer(seed)
+    n_components    <- as.integer(n_components)
+    n_dimensions    <- as.integer(n_dimensions)
+    conv_crit       <- as.double(conv_crit)
+    seed            <- as.integer(seed)
     boostrap_number <- as.integer(boostrap_number)
-    delta        <- as.double(delta)
+    delta           <- as.double(delta)
+
     if(!is.null(sample_proportion)){
         as.double(sample_proportion)
     }
@@ -124,10 +125,10 @@ decomp_aa <- function(sce,
         message(paste0('--- Reducing ', assay, ' matrix via ', reduction_method, ' ---'))
     }
 
-    # cheking if the reduced dimension representation is already present
+    # checking if the reduced dimension representation is already present
     if(!is.null(reduced_representation)){
       if(reduced_representation %in% SingleCellExperiment::reducedDimNames(sce)){
-        reduced_matrix <- t(reducedDim(sce, reduced_representation))
+        reduced_matrix <- Matrix::t(SingleCellExperiment::reducedDim(sce, reduced_representation))
       }else{
         stop('Please provide a reduced representation present in the SingleCellExperiment object')
       }
@@ -145,12 +146,14 @@ decomp_aa <- function(sce,
                       'none' = sce)
 
         # we need to transpose the matrix to have it features x cells
-        reduced_matrix <- t(reducedDim(sce, reduction_method))
+        reduced_matrix <- Matrix::t(SingleCellExperiment::reducedDim(sce, reduction_method))
     }
 
     if(reduction_method == 'none'){
-       reduced_matrix <- assay(sce, assay)
+       reduced_matrix <- SummarizedExperiment::assay(sce, assay)
     }
+
+
 
 
     if(verbose == TRUE){
@@ -172,6 +175,7 @@ decomp_aa <- function(sce,
                                             volume_ratio    = volume_ratio)              # this might be quite computational expensive for more than 8 dimensions
 
 
+
     if(verbose == TRUE){
         message('--- Storing Results ---')
     }
@@ -180,24 +184,27 @@ decomp_aa <- function(sce,
         # storing results from the best run among all!
         best_run <- as.integer(which(aa.model$pch_fits$SSE == min(aa.model$pch_fits$SSE)))
         # cell view
-        aa_h <- t(aa.model[['pch_fits']][['S']][[best_run]])
+        aa_h <- Matrix::t(aa.model[['pch_fits']][['S']][[best_run]])
         sce <- store_H(sce, h.matrix = aa_h, result_name = result_name, latent_name = 'A')
 
         # Note: The Gene View can not be access since it returns C which has unexpected
         #       dimensions (n_archetypes x n_archetypes); instead of cells x archetypes
         # we should fix this later (even via a linear regression or whatever)
     }else{
-
         # Storing the reduced H given the sample_proportion specified
         # still looking only at the best iteration out of all with respect to the
         # SSE.
-        result_name <- change_default_name(result_name = result_name, name_list = reducedDimNames((sce)))
+        result_name <- change_default_name(result_name = result_name, name_list = SingleCellExperiment::reducedDimNames((sce)))
         n_latents <- ncol(aa_h)
         colnames(aa_h) <- paste0(rep('A', n_latents), seq_len(n_latents))
         # rownames are already conserved and correct given that there only the
         # amount defined by sample_proportion.
-        h.dgCMatrix <- as(aa_h, 'sparseMatrix')
-        metadata(sce)[[result_name]] <- h.dgCMatrix
+        h.dgCMatrix <- methods::as(aa_h, 'sparseMatrix')
+        S4Vectors::metadata(sce)[[result_name]] <- h.dgCMatrix
     }
+
+
+
+    # this is the return
     return_model(sce = sce, model =  aa.model, return_model = return_model)
 }

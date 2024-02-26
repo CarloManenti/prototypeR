@@ -27,7 +27,7 @@
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' decomp_sparse_pca(sce, n_components = 50)
+#' #decomp_sparse_pca(sce, n_components = 50)
 #' @export
 decomp_sparse_pca <- function(sce,
                               n_components=50,
@@ -45,12 +45,14 @@ decomp_sparse_pca <- function(sce,
 # example usage
 # decomp_sparse_pca(sce, 100)
 
+
+
+
     if(verbose == TRUE){
       message('--- Checking packages ---')
     }
     is_package_installed('irlba') # fast and sparse PCA implementation in R
     # to make results reproducible
-    set.seed(seed)
 
     if(verbose == TRUE){
       message('--- Performing sparse Implicitly Restarted Lanczos Bidiagonalization Algorithm (IRLBA) PCA ---')
@@ -68,7 +70,7 @@ decomp_sparse_pca <- function(sce,
       message(paste0('--- Storing results ---'))
     }
     # just for this case, since we want to store also %VarianceExplained
-    result_name <- change_default_name(result_name, reducedDimNames(sce))
+    result_name <- change_default_name(result_name, SingleCellExperiment::reducedDimNames(sce))
 
     # gene view
     pca_w.matrix <- pca.model$x
@@ -84,12 +86,13 @@ decomp_sparse_pca <- function(sce,
                    result_name = result_name,
                    latent_name = 'PC')
 
-
-
     # storing the %VarianceExplained (pve) by the PCA method
     metadata_name <- paste0(result_name,'_%VarianceExplained')
     pve <- pca.model$sdev ^ 2 / sum (pca.model$sdev ^ 2)
-    metadata(sce)[[metadata_name]] <- pve
+    S4Vectors::metadata(sce)[[metadata_name]] <- pve
 
-    return_model(sce, model, return_model)
+
+
+    # this is the return
+    return_model(sce = sce, model = pca.model, return_model = return_model)
 }

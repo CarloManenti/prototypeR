@@ -8,10 +8,10 @@
 #' contain the default result_name as one of the names.
 #' @return Either the same result_name <character > or a new result_name which
 #' accounts for the presence of multiple result_names similar to the one passed
-#' to it. example result_name2 or result_nameN.
+#' to it. example result_name2 or result_name.
 #'
 #' @examples
-#' result_name <- change_default_name('pca', reducedDimNames(sce))
+#' #result_name <- change_default_name('pca', SingleCellExperiment::reducedDimNames(sce))
 #' @export
 change_default_name <- function(result_name, name_list){
     ### Description ###

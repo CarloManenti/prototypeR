@@ -27,11 +27,12 @@
 #' @param seed <integer> default 42; to set the seed for reproducibility.
 #' @param verbose <bool> default FALSE; Whether to be prompted with message
 #' for each step of the analysis.
+#' @param ... <extra arguments for the runACTIONet function>
 #' @return either a SingleCellExperiment object with H and W representation
 #' obtained via MultiResolution Archetypal Analysis, or the SingleCellExperiment
 #' and the ACTIONet object used to perform the various steps
 #' @examples
-#' decomp_mraa(sce, n_components = 14, verbose = T)
+#' #decomp_mraa(sce, n_components = 14, verbose = TRUE)
 #' @export
 
 decomp_mraa <- function(sce,
@@ -57,8 +58,6 @@ decomp_mraa <- function(sce,
     is_package_installed('ACTIONet')
     is_package_installed('ACTIONetExperiment')
     is_package_installed('Matrix')
-    library('ACTIONet')
-    set.seed(seed)
 
     ace <- ACTIONetExperiment::as.ACTIONetExperiment(sce)
 
@@ -108,22 +107,22 @@ decomp_mraa <- function(sce,
         message('--- Storing Results ---')
     }
     # General settings to store results without store_H and store_W
-    result_name <- change_default_name(result_name, reducedDimNames(sce))
-    n_mraa <- ncol(colMaps(ace)[['H_unified']])
+    result_name <- change_default_name(result_name, SingleCellExperiment::reducedDimNames(sce))
+    n_mraa <- ncol(ACTIONetExperiment::colMaps(ace)[['H_unified']])
     patterns_names <- paste0(rep('MRAA_', n_mraa), seq_len(n_mraa))
 
     # setting the names
-    colnames(colMaps(ace)[['H_unified']]) <- patterns_names
-    colnames(rowMaps(ace)[['unified_feature_profile']]) <- patterns_names
+    colnames(ACTIONetExperiment::colMaps(ace)[['H_unified']]) <- patterns_names
+    colnames(ACTIONetExperiment::rowMaps(ace)[['unified_feature_profile']]) <- patterns_names
 
-    colMaps(ace)[[result_name]] <- colMaps(ace)[['H_unified']]
-    metadata(ace)[[result_name]] <- rowMaps(ace)[['unified_feature_profile']]
+    ACTIONetExperiment::colMaps(ace)[[result_name]] <- ACTIONetExperiment::colMaps(ace)[['H_unified']]
+    S4Vectors::metadata(ace)[[result_name]] <- ACTIONetExperiment::rowMaps(ace)[['unified_feature_profile']]
 
     if(store_all_results==TRUE){
         sce <- ACTIONetExperiment::as.SingleCellExperiment(ace)
     }else{
-        reducedDims(sce)[[result_name]] <- colMaps(ace)[[result_name]]
-        metadata(sce)[[result_name]] <- metadata(ace)[[result_name]]
+        SingleCellExperiment::reducedDims(sce)[[result_name]] <- ACTIONetExperiment::colMaps(ace)[[result_name]]
+        S4Vectors::metadata(sce)[[result_name]] <- S4Vectors::metadata(ace)[[result_name]]
     }
 
 

@@ -5,15 +5,14 @@
 #' converting the matrix types in a proper way.
 #'
 #' @param sce <SingleCellExperiment object> SCE object
-#' @param result_name <character> default 'X';
-#' Name used to store the result in the SingleCellExperiment object.
 #' @param envname <character> default 'r-decomp';
 #' Specify the name of the python virtual
 #' environment to be used. If it does not exists it will create one and use it.
 #' @param main_layer <character> default counts. Main layer to be converted.
+#' @param ... <extra arguments for the function convertFormat>
 #' @return an AnnData object with most of the fields of the original SCE
 #' @examples
-#' sce2adata_sparse(sce)
+#' #sce2adata_sparse(sce)
 #' @export
 sce2adata_sparse <- function(sce,
                              envname='r-decomp',
@@ -23,8 +22,7 @@ sce2adata_sparse <- function(sce,
     # Converts a sce into an anndata, taking care also of the
     # coversion of the CSC to CSR sparse matrix.
 
-    # example usage
-    # sce2adata_sparse(sce)
+
 
     is_package_installed('sceasy')
     is_package_installed('reticulate')
@@ -45,6 +43,8 @@ sce2adata_sparse <- function(sce,
     if(scipy$sparse$csc$isspmatrix_csc(adata$X)){
         adata$X <- scipy$sparse$csr_matrix(adata$X)
     }
+
+
 
     return(adata)
 }

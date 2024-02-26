@@ -41,7 +41,7 @@
 #' only genes, or the SingleCellExperiment object and the model
 #' used to perform PCA.
 #' @examples
-#' decomp_dense_pca(sce, n_components = 50)
+#' #decomp_dense_pca(sce, n_components = 50)
 #' @export
 decomp_dense_pca <- function(sce,
                              n_components=50,
@@ -105,10 +105,10 @@ decomp_dense_pca <- function(sce,
         message(paste0('--- Storing results ---'))
     }
     # just for this case, since we want to store also %VarianceExplained
-    result_name <- change_default_name(result_name, reducedDimNames(sce))
+    result_name <- change_default_name(result_name, SingleCellExperiment::reducedDimNames(sce))
 
     # cell view
-    pca_h.matrix <- t(pca.model$components_)
+    pca_h.matrix <- Matrix::t(pca.model$components_)
     # storing the percentage of variance explained
     sce <- store_H(sce        = sce,
                   h.matrix    = pca_h.matrix,
@@ -117,11 +117,11 @@ decomp_dense_pca <- function(sce,
 
     # storing the %VarianceExplained by the PCA method
     metadata_name <- paste0(result_name,'_%VarianceExplained')
-    metadata(sce)[[metadata_name]] <- pca.model$explained_variance_ratio_
+    S4Vectors::metadata(sce)[[metadata_name]] <- pca.model$explained_variance_ratio_
 
 
 
-    if(!return_model) return(sce)
-    return(list(obj = sce, model = pca.model))
+    # this is the return
+    return_model(sce = sce, model = pca.model, return_model = return_model)
 }
 

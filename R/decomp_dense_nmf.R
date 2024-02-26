@@ -33,8 +33,8 @@
 #' method for NMF. (From nimfa).
 #' *random* Random is the simplest MF initialization method. (From nimfa)
 #' @param ignore_warnings <bool> default FALSE; Whether to avoid warnings.
-#' note: using verbose = FALSE and ignore warnigns = TRUE may result in
-#' the suppression of warnings due to supressing most of the messages from
+#' note: using verbose = FALSE and ignore warnings = TRUE may result in
+#' the suppression of warnings due to suppressing most of the messages from
 #' the function.
 #' @param result_name <character> default 'dense-nmf';
 #' Name of used to store the result in the SingleCellExperiment object.
@@ -47,11 +47,15 @@
 #' @param seed <integer> default 42; to set the seed for reproducibility.
 #' @param verbose <bool> default FALSE; Whether to be prompted with message
 #' for each step of the analysis.
+#' @param ... <extra arguments for the specific implementation of nmf used>
 #' @return either a SingleCellExperiment object with both H and W
 #' representations or the SingleCellExperiment object and the model
 #' used to perform NMF.
 #' @examples
-#' decomp_dense_nmf(sce, 3, intialization = 'randomv')
+#' #decomp_dense_nmf(sce, n_components = 3)
+#' #decomp_dense_nmf(sce, n_components = 3, method = 'bayesian')
+#' #decomp_dense_nmf(sce, n_components = 3, method = 'separable')
+#' #decomp_dense_nmf(sce, n_components = 3, method = 'default')
 #' @export
 decomp_dense_nmf <- function(sce,
                        n_components,
@@ -85,7 +89,7 @@ decomp_dense_nmf <- function(sce,
     nimfa    <- reticulate::import('nimfa', delay_load = TRUE)
     # enforcing the type of variables to avoid python crashesh
     n_components <- as.integer(n_components)
-    set.seed(seed)
+
 
 
     # we need to transpose the matrix to work with nimfa
@@ -95,7 +99,7 @@ decomp_dense_nmf <- function(sce,
     if(verbose){
         warning('--- Dense coercion ---')
     }
-    matrix.dense <- invisible(as.matrix(t(assay(sce, assay))))
+    matrix.dense <- invisible(as.matrix(Matrix::t(assay(sce, assay))))
 
 
 
@@ -111,7 +115,7 @@ decomp_dense_nmf <- function(sce,
                                                            rank = n_components,
                                                            seed = initialization,
                                                            ...),
-                        'default'  = nimfa$nmf(matrix.dense,
+                        'default'  = nimfa$methods$nmf(matrix.dense,
                                                rank = n_components,
                                                seed = initialization,
                                                ...),
@@ -120,7 +124,7 @@ decomp_dense_nmf <- function(sce,
                                                  seed = initialization,
                                                  ...))
     # fitting the model
-    nmf.model = nfm.model()
+    nmf.model <- nfm.model()
 
 
 
@@ -128,7 +132,7 @@ decomp_dense_nmf <- function(sce,
         message('--- Storing Results ---')
     }
     # gene view
-    nmf_w.matrix <- t(nmf.model$coef())
+    nmf_w.matrix <- Matrix::t(nmf.model$coef())
     sce <- store_W(sce = sce,
                    w.matrix = nmf_w.matrix,
                    result_name = result_name,

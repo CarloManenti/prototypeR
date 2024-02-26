@@ -1,13 +1,19 @@
 Package: ruler
 Type: Package
-Title: Representing Single Cell data via Decomposition and Partition approaches
+Title: Representing Single Cell Data via Decomposition and Partition Approaches
 Version: 0.0.9
-Author: Carlo Manenti
-Maintainer: <carlomanenti99@gmail.com>
-Description: The package provides many different decomposition and partition methods to achieve useful representations of single cell data. 
+Authors@R: c(
+    person('Carlo', 'Manenti', email = 'carlomanenti99@gmail.com',
+    role = c('aut', 'cre')
+    ))
+Description: Multiple decomposition and partition 
+    methods to outline useful representations of single cell data. 
 License: GPL-2
 Encoding: UTF-8
-LazyData: true
 Depends: 
-    R (>= 3.5), SingleCellExperiment, ggplot2, Matrix
-RoxygenNote: 7.2.3
+    R (>= 3.5), SingleCellExperiment
+Imports: ACTIONet, ACTIONetExperiment, ComplexHeatmap, 
+    ica, irlba, reticulate, sceasy, scran, scrattch.hicat, methods, stats,
+    grDevices, Matrix, ParetoTI, S4Vectors, SummarizedExperiment, ggplot2
+biocViews: Software, BiomedicalInformatics, GeneExpressionWorkflow
+RoxygenNote: 7.3.1

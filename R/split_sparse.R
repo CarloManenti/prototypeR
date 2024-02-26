@@ -10,14 +10,14 @@
 #' split_vector must be the same length as the number of columns.
 #' @param by_col <bool> default 'X'; Whether to split the matrix by columns or
 #' by rows.
-#' @param sorted <bool> default 'TRUE'; Whether to sort the output or not.
+#' @param sorted <bool> default TRUE; Whether to sort the output or not.
 #' This parameter is useful when dealing with a numeric split_vector, since the
 #' if sorted = FALSE, the order of the split vector will define the order of
 #' the output matrices.
 #' @return A list with many smaller matrices, one for each unique element in
 #' the split_vector. The order of the matrices depends on the sorted variable.
 #' @examples
-#' split_sparse(sparse_matrix = counts(sce), split_vector = clusters)
+#' #split_sparse(sparse_matrix = SingleCellExperiment::counts(sce), split_vector = sce$cluster)
 #' @export
 split_sparse <- function(sparse_matrix,
                          split_vector,
@@ -45,7 +45,7 @@ split_sparse <- function(sparse_matrix,
     transpose <- ifelse(dimension == length(split_vector), FALSE, TRUE)
     # yes we need
     if(transpose){
-        sparse_matrix <- t(sparse_matrix)
+        sparse_matrix <- Matrix::t(sparse_matrix)
     }
 
     # getting the 'levels'
@@ -65,7 +65,7 @@ split_sparse <- function(sparse_matrix,
                                 # have we transposed the matrix?
                                 # YES -> we transpose again
                                 # NO -> we leave it as it is
-                                if(transpose) mat <- t(mat)
+                                if(transpose) mat <- Matrix::t(mat)
                                 return(mat)
                             })
 

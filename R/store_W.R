@@ -16,7 +16,7 @@
 #' @return The SCE object with the new W representation stored in the
 #' metadata slot.
 #' @examples
-#' store_W(sce, pca_w.matrix, 'pca', 'PC')
+#' #store_W(sce, w.matrix =  Matrix::t(matrix(stats::rnorm(2 * nrow(sce)), nrow = nrow(sce))), result_name = 'aa', latent_name = 'AA')
 #' @export
 store_W <- function(sce,
                     w.matrix,
@@ -40,11 +40,11 @@ store_W <- function(sce,
                                  seq_len(n_latents))
     rownames(w.matrix) <- rownames(sce)
     # setting the type of the H matrix
-    w.dgCMatrix <- as(w.matrix, 'sparseMatrix')
+    w.dgCMatrix <- methods::as(w.matrix, 'sparseMatrix')
     # checking for an already in use result_name
-    result_name <- change_default_name(result_name, reducedDimNames(sce))
+    result_name <- change_default_name(result_name, SingleCellExperiment::reducedDimNames(sce))
 
     # storing the actual object
-    metadata(sce)[[result_name]] <- w.dgCMatrix
+    S4Vectors::metadata(sce)[[result_name]] <- w.dgCMatrix
     return(sce)
 }

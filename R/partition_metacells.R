@@ -66,11 +66,12 @@
 #' @param seed <integer> default 42; to set the seed for reproducibility.
 #' @param verbose <bool> default FALSE; Whether to be prompted with message
 #' for each step of the analysis.
+#' @param ... <extra arguments for the divide_and_conquer_pipeline function>
 #' @return either a SingleCellExperiment object with W matrix
 #' representation or the SingleCellExperiment object and the model
 #' used to perform MetaCell analysis.
 #' @examples
-#' partition_metacells(sce, target_number_of_metacells = 2, min_umi = 5)
+#' #partition_metacells(sce, target_number_of_metacells = 2, min_umi = 5)
 #' @export
 partition_metacells <- function(sce,
                                target_number_of_metacells=100,
@@ -93,7 +94,7 @@ partition_metacells <- function(sce,
                                assay_name='full_run',
                                ignore_warnings=TRUE,
                                result_name='metacells',
-                               envname='r-parition',
+                               envname='r-partition',
                                return_model=FALSE,
                                seed=42,
                                verbose=FALSE,
@@ -125,9 +126,9 @@ partition_metacells <- function(sce,
                     verbose = verbose)
 
     # loading the python packages
-    mc <- reticulate::import('metacells') # performing MetaCell analysis
-    ad <- reticulate::import('anndata')   # from SCE to AnnData
-    np <- reticulate::import('numpy')     # data handling
+    mc <- reticulate::import('metacells', delay_load = TRUE) # performing MetaCell analysis
+    ad <- reticulate::import('anndata', delay_load = TRUE)   # from SCE to AnnData
+    np <- reticulate::import('numpy', delay_load = TRUE)     # data handling
 
     # enforcing the variables type to avoid crashes in python
     if(!is.null(min_umi)){
@@ -139,13 +140,12 @@ partition_metacells <- function(sce,
     if(!is.null(max_excluded_gene_fraction)){
         max_excluded_gene_fraction <- as.double(max_excluded_gene_fraction)
     }
-    seed <-  as.integer(seed)
-    set.seed(seed)
+    seed <- as.integer(seed)
 
     # IMPORTANT
     # float32 type required by MetaCell will be deprecated in late 2024
-    matrix.dgCMatrix <- counts(sce)
-    data.h5ad <- ad$AnnData(t(matrix.dgCMatrix), dtype = 'float32')
+    matrix.dgCMatrix <- SingleCellExperiment::counts(sce)
+    data.h5ad <- ad$AnnData(Matrix::t(matrix.dgCMatrix), dtype = 'float32')
     data.h5ad$obs_names <- colnames(matrix.dgCMatrix)
     data.h5ad$var_names <- rownames(matrix.dgCMatrix)
     # enforcing unique feature names
@@ -258,7 +258,7 @@ partition_metacells <- function(sce,
     metacells.h5ad <- mc$pl$collect_metacells(data.h5ad, random_seed = seed)
 
     # gene view
-    metacells_w.dgCMatrix <- t(metacells.h5ad$X)
+    metacells_w.dgCMatrix <- Matrix::t(metacells.h5ad$X)
     rownames(metacells_w.dgCMatrix) <- np$array(data.h5ad$var_names)
     colnames(metacells_w.dgCMatrix) <- paste0(rep('MetaCell_'),
                                          seq(1, ncol(metacells_w.dgCMatrix)))
@@ -277,8 +277,8 @@ partition_metacells <- function(sce,
     })
 
     metacells_w.dgCMatrix <- rbind(metacells_w.dgCMatrix, missing_genes)
-    result_name <- change_default_name(result_name, names(metadata(sce)))
-    metadata(sce)[[result_name]] <- metacells_w.dgCMatrix
+    result_name <- change_default_name(result_name, names(S4Vectors::metadata(sce)))
+    S4Vectors::metadata(sce)[[result_name]] <- metacells_w.dgCMatrix
 
 
 

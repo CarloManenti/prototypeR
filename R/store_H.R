@@ -15,7 +15,7 @@
 #' @return The SCE object with the new H representation stored in the
 #' reducedDim slot.
 #' @examples
-#' store_H(sce, h.matrix = aa_h.matrix, result_name = 'aa', latent_name = 'AA')
+#' #store_H(sce, h.matrix = Matrix::t(matrix(stats::rnorm(2 * ncol(sce)), ncol = ncol(sce))), result_name = 'aa', latent_name = 'AA')
 #' @export
 store_H <- function(sce,
                     h.matrix,
@@ -39,11 +39,11 @@ store_H <- function(sce,
                                  seq_len(n_latents))
     rownames(h.matrix) <- colnames(sce)
     # setting the type of the H matrix
-    h.dgCMatrix <- as(h.matrix, 'sparseMatrix')
+    h.dgCMatrix <- methods::as(h.matrix, 'sparseMatrix')
     # checking for an already in use result_name
-    result_name <- change_default_name(result_name, reducedDimNames(sce))
+    result_name <- change_default_name(result_name, SingleCellExperiment::reducedDimNames(sce))
 
     # storing the actual object
-    reducedDim(sce, result_name) <- h.dgCMatrix
+    SingleCellExperiment::reducedDim(sce, result_name) <- h.dgCMatrix
     return(sce)
 }

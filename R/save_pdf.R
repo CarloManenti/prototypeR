@@ -1,6 +1,6 @@
 #' Handy Function to Save a ComplexHeatmap in .pdf format
 #'
-#' This function saves a CompleHeatmap in .pdf format
+#' This function saves a ComplexHeatmap in .pdf format
 #'
 #' @param plot ComplexHeatmap
 #' @param file_name <character.pdf> name of the file used to store the plot.
@@ -10,7 +10,7 @@
 #' height of the plot
 #' @return a .pdf file of a ComplexHeatmap plot
 #' @examples
-#' save_pdf(plot = heatmap.plot, file_name = '~/Documents/plot.pdf')
+#' #save_pdf(plot = ComplexHeatmap::Heatmap(seq(1, 10, length.out = 10), col = grDevices::blues9), file_name = '~/Documents/plot.pdf')
 #' @export
 save_pdf <- function(plot,
                      file_name,
@@ -30,12 +30,12 @@ save_pdf <- function(plot,
     is_package_installed('ComplexHeatmap')
 
     # initializing the pdf
-    pdf(file   = file_name,
-        width  = width,
-        height = height)
+    grDevices::pdf(file   = file_name,
+                   width  = width,
+                   height = height)
     # plotting (otherwise you will not save the plot,
     # but you will get a 'damaged' file)
     ComplexHeatmap::draw(plot)
     # closing the plot (thus saving the plot in pdf)
-    dev.off()
+    grDevices::dev.off()
 }
