@@ -23,7 +23,6 @@ Imports:
     irlba, 
     Matrix,
     methods,
-    ParetoTI,
     reticulate,
     S4Vectors,
     sceasy, 
@@ -33,6 +32,7 @@ Imports:
 Suggests:
     ACTIONet,
     ACTIONetExperiment,
+    ParetoTI,
     patchwork,
     scrattch.hicat,
     testthat (>= 3.0.0)
