@@ -13,7 +13,7 @@ Description: Framework to achieve useful representations of single cell data,
 License: GPL-2
 Encoding: UTF-8
 Depends: 
-    R (>= 4.3.0), 
+    R (>= 4.0), 
     SingleCellExperiment
 Imports:
     ComplexHeatmap, 
